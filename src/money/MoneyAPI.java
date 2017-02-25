@@ -118,7 +118,6 @@ public interface MoneyAPI {
 
 	Double getBank(Player player);
 
-
 	Double getBank(String player);
 
 	/**
