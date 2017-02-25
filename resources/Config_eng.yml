@@ -1,0 +1,47 @@
+# Whether to use the multi thread to handle command (i.e. when using a command, server will not be abnormal. But may be due to a database query causes (1 ~ 5 seconds) delay.
+# If you do not understand that, please use default value.
+# Default: true
+command-threaded: true
+
+# 1st Currency
+# Default: Coin
+money-unit-1: "Coin"
+
+# If false, players can't use 2st currency
+# Default: true
+enable-unit-2: true
+
+# 2nd Currency.  (Only 1st currency can deposit in the bank)
+# Default: Point
+money-unit-2: "Point"
+
+# Bank interest.
+# Default: 0.0003
+bank-interest-value: "0.0003"
+
+# Bank interest calculation time. (Real time) (Unit: sec)
+# Default: 7200
+bank-interest-time: "7200"
+
+# Please do not modify that.
+bank-time: "0"
+
+# The number of initial money players entering the server for the first time
+# Default: 1000
+initial-money-1: "1000"
+
+# The number of initial money players entering the server for the first time
+# Default: 0
+initial-money-2: "0"
+
+# The initial bank savings of players entering the server for the first time
+# Default: 0
+initial-bank-money: "0"
+
+# When paying the first currency, the player is the lowest.
+# Default: 1000
+pay-1-limit: "1000"
+
+# When paying the second currency, the player is the lowest.
+# Default: 1000
+pay-2-limit: "1000"

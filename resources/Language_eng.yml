@@ -1,0 +1,126 @@
+# I am sorry for my bad English.
+# If you can help me, please visit "https://pl.zxda.net/plugins/573.html" and comment. Or contact me:
+# My e-mail: 1040400290@qq.com
+# My QQ number: 1040400290
+# If you want to donate for us, my alipay user is Him188. Thanks!!
+
+#######################################################
+####################### SYSTEM ########################
+#######################################################
+
+type: "eng"
+
+version: "5"
+
+use-in-game: "§6Please use this command in-game"
+
+has-no-permission: "§6You don't have permission to use this command"
+
+load-Database-error: "§6Failed while loading database! Please check the configuration of Database in Config.yml! "
+
+stop-plugin: "§6Cannot continue to run the plugin, shutting down.."
+
+load-Database-exception: "§6Failed while loading database: %n%s%n%n§6Reason:%n%s%nPlease don't modify the data file (Data.yml)! "
+
+#######################################################
+######################### UNIT ########################
+#######################################################
+
+# %d represents amount, %s represents currency
+your-money-1: "§bYou have %d %s"
+
+# %d represents amount, %s represents currency
+your-money-2: "§bYou have %d %s"
+
+cannot-use-money-2: "§6Umm..Cannot use this kind of money"
+
+
+#######################################################
+######################### BANK ########################
+#######################################################
+
+# %d represents amount, %s represents currency
+your-bank: "§bYou bank: %d %s"
+
+
+
+# %d represents amount, %s represents currency
+bank-save-success: "§bDepositing %d %s done!"
+
+# %s represents command of depositing
+bank-save-format-error: "§6Format error. Please use /%s <amount>"
+
+bank-save-value-error: "§6Format error. The deposit amount is not greater than your balance."
+
+
+
+# %d represents amount, %s represents currency
+bank-take-success: "§bWithdrawing %d%s done!"
+
+# %s represents command of withdraw money
+bank-take-format-error: "§6Format error. Please use /%s <amount>"
+
+bank-take-value-error: "§6Format error. The amount of money can not be greater than the balance of your bank"
+
+#######################################################
+######################### PAY #########################
+#######################################################
+
+# %d represents the minimum number of restrictions, %s represents currency
+pay-can-not-less-than-initiation: "§6After the payment of the balance can not be less than %d %s, unable to complete the transaction"
+
+# %s represents command of payment
+pay-format-error: "§6Format error. Please use /%s <player> <amount>"
+
+pay-value-error: "§6Format error. Payment cannot be greater than your balance"
+
+# %d represents amount, the first %s represents currency, the second %s represents player name
+pay-success: "§bPaying %d %s to %s done!"
+
+# %s represents command of payment.
+invalid-name: "§6The arg <player> should not be null, Please use /%s <player> <amount>"
+
+#######################################################
+######################## GIVE #########################
+#######################################################
+
+# %s represents command of giving
+give-format-error: "§6Format error. Please use /%s <player> <amount>"
+
+# %d represents amount, The first %s represents currency, The second %s represents player name
+give-success: "§bPaying %d %s to %s done!"
+
+#######################################################
+######################## SET ##########################
+#######################################################
+
+# %s represents command of setting money
+set-format-error: "§6Format error. Please use /%s <player> <amount>"
+
+# The first %s represents player name, the second %s represents currency, %d represents amount
+set-success: "§bSet %s's %s to %d done!"
+
+#######################################################
+##################### SUPER SET #######################
+#######################################################
+
+# %s represents command of modifying money of all players in the server
+super-set-format-error: "§6Format error. Please use /%s <amount>"
+
+# %d represents amount, %s represents currency
+super-set-success: "§bModifying money of %s to %d done!"
+
+#######################################################
+######################## LIST #########################
+#######################################################
+
+# %s represents currency, the first %d represents current page number, the second %d represents max page number
+list: "§bView %s list (Page %d/%d):"
+
+#######################################################
+#################### GIVE ONLINE ######################
+#######################################################
+
+give-online-format-error: "§6Please enter <amount>"
+
+give-online-done: "§bGiving online done."

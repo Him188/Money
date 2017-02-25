@@ -1,0 +1,60 @@
+name: Money
+main: money.Money
+version: 1.7.0
+api: [1.0.0]
+load: STARTUP
+author: Him188
+description: "Money plugin for Nukkit"
+
+updateInfo-1.0.0:
+- "2016-05-26 插件完成"
+
+updateInfo-1.0.1:
+- "2016-05-27 修复 加载插件时可能出现的一个 bug"
+- "2016-05-28 新增 修改玩家货币数量"
+- "2016-05-28 新增 批量操作"
+- "2016-05-28 新增 配置文件版本号, 自动修补缺失部分"
+- "2016-05-28 修改 类名 (money.YAMLDataBase ==> money.YAMLDatabase)"
+
+updateInfo-1.1.0:
+- "2016-06-06 支持 英文, 繁体中文"
+
+updateinfo-1.2.0:
+- "2016-06-08 新增 事件系统(money.event.MoneyChangeEvent, Money.event.BankChangeEvent)"
+- "2016-06-08 修改 money.Money#setMoney(String, double, boolean)"
+- "2016-06-08 修改 money.Money#setBank(String, double)"
+
+updateInfo-1.2.1:
+- "2016-06-08 修复 语言文件一个bug"
+
+updateInfo-1.2.2:
+- "2016-06-19 新增 money.Money#getMonetaryUnit1(). 使用效果同 money.Money#getMoneyUnit1()"
+- "2016-06-19 新增 money.Money#getMonetaryUnit2(). 使用效果同 money.Money#getMoneyUnit2()"
+
+updateInfo-1.3.0:
+- "2016-07-08 修改 API 中所有 Double 类型参数为 double 类型参数. 返回值不变化"
+- "2016-07-08 新增 money.Money#addMoney(Player player, double amount, boolean type)"
+- "2016-07-08 新增 money.Money#addMoney(String player, double amount, boolean type)"
+- "2016-07-08 新增 money.Money#addMoney(Player player, double amount)"
+- "2016-07-08 新增 money.Money#addMoney(String player, double amount)"
+- "2016-07-08 优化 运行效率"
+
+updateInfo-1.4.0:
+- "2016-08-07 新增 排行榜"
+
+updateInfo-1.4.1:
+- "2016-08-10 优化 替换某些 for-each 循环为 lambda"
+
+updateInfo-1.5.0:
+- "2016-08-19 新增 给予在线玩家指令"
+
+updateInfo-1.6.0:
+- "2016-12-17 优化 小细节优化"
+- "2016-12-17 修改 更新英文和繁体中文配置文件. Commands.yml 版本修改为 4, Language.yml 版本修改为 5"
+- "2016-12-17 新增 0.16 的指令提示"
+
+updateInfo-1.6.1:
+- "2017-01-15 修复 一个小bug"
+
+updateInfo-1.7.0:
+- "2017-01-17 新增 便捷获取货币名称的 API"
