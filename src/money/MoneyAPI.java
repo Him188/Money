@@ -115,7 +115,6 @@ public interface MoneyAPI {
 	 * @see Money#getBank(String)
 	 * @see Money#getBank(Player)
 	 */
-
 	Double getBank(Player player);
 
 	Double getBank(String player);
@@ -136,25 +135,32 @@ public interface MoneyAPI {
 	 * 增加一个玩家的货币1数量
 	 *
 	 * @param player 玩家名
-	 * @param amount 数量
+	 * @param amount 数量. 可以负数
 	 * @see Money#addMoney(String, double)
 	 * @see Money#addMoney(Player, double)
 	 */
-	void addMoney(String player, double amount);
+	void addMoney(String player, @Negativable double amount);
 
-	void addMoney(Player player, double amount);
+	void addMoney(Player player, @Negativable double amount);
 
 
 	/**
 	 * 增加一个玩家的货币1数量
 	 *
 	 * @param player 玩家名
-	 * @param amount 数量
+	 * @param amount 数量. 可以负数
 	 * @param type   货币类型. true: 货币2, false: 货币1
 	 * @see Money#addMoney(String, double)
 	 * @see Money#addMoney(Player, double)
 	 */
-	void addMoney(Player player, double amount, boolean type);
+	void addMoney(Player player, @Negativable double amount, boolean type);
 
-	void addMoney(String player, double amount, boolean type);
+	void addMoney(String player, @Negativable double amount, boolean type);
+}
+
+/**
+ * 可以为负数
+ */
+@interface Negativable {
+
 }
