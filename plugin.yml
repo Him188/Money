@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 1.7.0
+version: 1.7.1
 api: [1.0.0]
 load: STARTUP
 author: Him188
@@ -58,3 +58,6 @@ updateInfo-1.6.1:
 
 updateInfo-1.7.0:
 - "2017-01-17 新增 便捷获取货币名称的 API"
+
+updateInfo-1.7.1:
+- "2017-02-25 money.Money#addMoney()支持负数 (其实早就支持了, 只是在API中强调)"
