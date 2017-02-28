@@ -126,7 +126,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			/* Register Commands */
 
 			/* Command Parameters (for MCPE 0.16) */
-			final Map<String, HashMap<String, CommandParameter[]>> parameters = new HashMap<String, HashMap<String, CommandParameter[]>>() {
+			final Map<String, Map<String, CommandParameter[]>> parameters = new HashMap<String, Map<String, CommandParameter[]>>() {
 				{
 					put("wallet-info-1", new HashMap<String, CommandParameter[]>() {{
 						put("wallet-info-1", new CommandParameter[]{
@@ -155,37 +155,37 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 					}});
 					put("pay-1", new HashMap<String, CommandParameter[]>() {{
 						put("bank-1", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
+								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
 								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
 						});
 					}});
 					put("pay-2", new HashMap<String, CommandParameter[]>() {{
 						put("bank-2", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
+								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
 								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
 						});
 					}});
 					put("give-1", new HashMap<String, CommandParameter[]>() {{
 						put("give-1", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
+								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
 								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
 						});
 					}});
 					put("give-2", new HashMap<String, CommandParameter[]>() {{
 						put("give-2", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
+								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
 								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
 						});
 					}});
 					put("set-1", new HashMap<String, CommandParameter[]>() {{
 						put("set-1", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
+								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
 								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
 						});
 					}});
 					put("set-2", new HashMap<String, CommandParameter[]>() {{
 						put("set-2", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
+								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
 								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
 						});
 					}});

@@ -61,3 +61,6 @@ updateInfo-1.7.0:
 
 updateInfo-1.7.1:
 - "2017-02-25 money.Money#addMoney()支持负数 (其实早就支持了, 只是在API中强调)"
+
+updateInfo-1.7.2:
+- "2017-02-28 修复指令参数无法传递离线玩家的问题"
