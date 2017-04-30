@@ -85,10 +85,15 @@ public interface MoneyAPI {
 	 * @see Money#getMoney(String, boolean)
 	 * @see Money#getMoney(Player, boolean)
 	 */
+	@Deprecated
 	Double getMoney(String player, boolean type);
 
-
+	@Deprecated
 	Double getMoney(Player player, boolean type);
+
+	Double getMoney(String player, CurrencyType type);
+
+	Double getMoney(Player player, CurrencyType type);
 
 
 	/**
@@ -117,9 +122,16 @@ public interface MoneyAPI {
 	 * @see Money#setMoney(String, double, boolean)
 	 * @see Money#setMoney(Player, double, boolean)
 	 */
+	@Deprecated
 	void setMoney(String player, double money, boolean type);
 
+	@Deprecated
 	void setMoney(Player player, double money, boolean type);
+
+	void setMoney(String player, double money, CurrencyType type);
+
+	void setMoney(Player player, double money, CurrencyType type);
+
 
 
 	/**
@@ -187,9 +199,15 @@ public interface MoneyAPI {
 	 * @see Money#addMoney(String, double)
 	 * @see Money#addMoney(Player, double)
 	 */
+	@Deprecated
 	void addMoney(Player player, double amount, boolean type);
 
+	@Deprecated
 	void addMoney(String player, double amount, boolean type);
+
+	void addMoney(Player player, double amount, CurrencyType type);
+
+	void addMoney(String player, double amount, CurrencyType type);
 
 
 	/**

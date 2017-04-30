@@ -50,4 +50,18 @@ public enum CurrencyType {
 	public String toString() {
 		return MoneyAPI.getInstance().getMoneyUnit(this);
 	}
+
+	public static CurrencyType fromBoolean(boolean booleanValue){
+		return booleanValue ? SECOND : FIRST;
+	}
+
+	public static CurrencyType fromString(String value){
+		if (value.equals(MoneyAPI.getInstance().getMoneyUnit1())) {
+			return fromBoolean(false);
+		} else if (value.equals(MoneyAPI.getInstance().getMoneyUnit2())) {
+			return fromBoolean(true);
+		}
+
+		return null;
+	}
 }

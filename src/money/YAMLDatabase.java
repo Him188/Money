@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-class YAMLDatabase {
-	protected Map<String, Map<String, String>> data; // TODO: 2017/4/25  non-static
+public class YAMLDatabase {
+	protected Map<String, Map<String, String>> data;
 	private Money owner;
 	private String file;
 

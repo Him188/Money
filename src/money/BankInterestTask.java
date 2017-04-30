@@ -4,10 +4,10 @@ import cn.nukkit.scheduler.PluginTask;
 
 import java.util.Date;
 
-class TaskHandler extends PluginTask<Money> {
+class BankInterestTask extends PluginTask<Money> {
 	private int count = 0;
 
-	public TaskHandler(Money money) {
+	public BankInterestTask(Money money) {
 		super(money);
 	}
 
