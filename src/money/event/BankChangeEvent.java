@@ -11,7 +11,7 @@ import cn.nukkit.event.HandlerList;
  *
  * PS: 只有货币1才能存入银行
  *
- * @see Money#setBank(String, Double)
+ * @see Money#setBank(String, double)
  */
 public class BankChangeEvent extends Event implements Cancellable {
 	protected String player;

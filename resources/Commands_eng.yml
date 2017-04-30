@@ -53,10 +53,10 @@ set-1: "setcoin"
 #Modify the second currency of a player (Parameters: <player> <amount>)
 set-2: "setpoint"
 
-#Modify the first currency of all playes who joined server (no matter whether they are online) (Parameters: <amount>)
+#Modify the first currency of all players who joined server (no matter whether they are online) (Parameters: <amount>)
 super-set-1: "supersetcoin"
 
-#Modify the second currency of all playes who joined server (no matter whether they are online) (Parameters: <amount>)
+#Modify the second currency of all players who joined server (no matter whether they are online) (Parameters: <amount>)
 super-set-2: "supersetpoint"
 
 

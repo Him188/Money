@@ -11,7 +11,6 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
-import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
@@ -23,18 +22,15 @@ import java.util.*;
 
 /**
  * Money 的主类
- * 实际上这个插件写的并不好...
- * 很多地方不符合规范...
- * 多余的 Database 类...
- * 以后可能会重写.(API不变)
  *
- * @author Him188
+ * @author Him188 @ Money Project
+ * @since Money 1.0.0
  */
 public final class Money extends PluginBase implements MoneyAPI, Listener {
 	private static Money instance = null;
 
 	private Map<String, String> language = new HashMap<>();
-	private Database data = null;
+	YAMLDatabase data = null;
 	private Map<String, String> commands = new HashMap<>();
 
 	private boolean canUseMoney2 = false;
@@ -43,9 +39,6 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	protected long bank_time = 0L;
 	protected long last_time = 0L;
 	protected double bank_interest = 0d;
-
-	protected Map<String, Object> config = new HashMap<>();
-
 
 	private final static String nowCommandVersion = "4";
 	private final static String nowLanguageVersion = "5";
@@ -59,8 +52,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	public void onLoad() {
 		try {
 			getDataFolder().mkdir();
-			config = new Config(getDataFolder() + "/Config.yml", Config.YAML).getAll();
-			if (config.isEmpty()) {
+			reloadConfig();
+			if (getConfig().getAll().isEmpty()) {
 				String language = "";
 				Integer errorTimes = 0;
 				Boolean selected = false;
@@ -125,7 +118,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 			/* Register Commands */
 
-			/* Command Parameters (for MCPE 0.16) */
+			/* Command Parameters */
 			final Map<String, Map<String, CommandParameter[]>> parameters = new HashMap<String, Map<String, CommandParameter[]>>() {
 				{
 					put("wallet-info-1", new HashMap<String, CommandParameter[]>() {{
@@ -225,7 +218,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			commands.forEach((key, value) -> {
 				PluginCommand cmd;
 				cmd = new PluginCommand<>(value, this);
-				cmd.setExecutor(this);
+				cmd.setExecutor(this);// TODO: 2017/4/25
 				cmd.setCommandParameters(parameters.getOrDefault(key, new HashMap<>()));
 				Server.getInstance().getCommandMap().register(key, cmd);
 			});
@@ -246,6 +239,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	@Override
 	public boolean onCommand(CommandSender poster, Command command, String label, String[] args) {
 		if (command_threaded) {
+			// TODO: 2017/4/25  async task
 			new Thread(() -> {
 				String msg = callCommand(poster, command, label, args);
 				if (!Objects.equals(msg, "")) {
@@ -314,17 +308,10 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		con.save();
 	}
 
-
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent event) {
 		data.initPlayer(event.getPlayer().getName());
 	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onQuit(PlayerQuitEvent event) {
-		data.savePlayer(event.getPlayer().getName());
-	}
-
 
 	protected void save() {
 		data.save();
@@ -332,7 +319,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	protected String getLanguage() {
 		try {
-			return (String) config.get("language");
+			return (String) getConfig().get("language");
 		} catch (Exception ignore) {
 
 		}
@@ -345,30 +332,29 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		Map<String, Object> normal = new Config(getDataFolder() + "/Config_default.yml", Config.YAML).getAll();
 		final boolean[] formatted = {false};
 		normal.forEach((key, value) -> {
-			config.putIfAbsent(key, value);
+			getConfig().getAll().putIfAbsent(key, value);
 
 			formatted[0] = true;
 		});
 
 		if (formatted[0]) {
 			Config con = new Config(getDataFolder() + "/Config.yml", Config.YAML);
-			con.setAll((LinkedHashMap<String, Object>) config);
+			con.setAll((LinkedHashMap<String, Object>) getConfig().getAll());
 			con.save();
 		}
 
 		new File(getDataFolder() + "/Config_default.yml").delete();
 
-		Database.data.putIfAbsent("__BANK__", new HashMap<>());
+		data.data.putIfAbsent("__BANK__", new HashMap<>());
 
 		last_time = new Date().getTime();
-		Database.data.get("__BANK__").put("time", Long.toString(last_time));
-		bank_time = Long.parseLong(config.getOrDefault("bank-interest-time", 0).toString()) * 1000;
-		bank_interest = 1 + Double.parseDouble(config.getOrDefault("bank-interest-value", 0).toString());
-		command_threaded = (boolean) config.get("command-threaded");
+		data.data.get("__BANK__").put("time", Long.toString(last_time));
+		bank_time = Long.parseLong(getConfig().getAll().getOrDefault("bank-interest-time", 0).toString()) * 1000;
+		bank_interest = 1 + Double.parseDouble(getConfig().getAll().getOrDefault("bank-interest-value", 0).toString());
+		command_threaded = (boolean) getConfig().get("command-threaded");
 	}
 
 	private void initDatabase() {
-		// TODO: 2016/8/7 0007 MYSQL support 
 		data = new YAMLDatabase(this);
 		if (!data.loadFile(getDataFolder() + "/Data.yml")) {
 			this.getLogger().warning(translateMessage("load-Database-error"));
@@ -376,14 +362,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			Server.getInstance().getPluginManager().disablePlugin(this);
 			return;
 		}
-		data.init();
 
-		canUseMoney2 = (config.get("enable-money-2") == null || !Boolean.parseBoolean(config.get("enable-money-2").toString()));
+		canUseMoney2 = (getConfig().get("enable-money-2") == null || !Boolean.parseBoolean(getConfig().get("enable-money-2").toString()));
 
 	}
 
 
-	protected String translateMessage(String message) {
+	public String translateMessage(String message) {
 		if (language.get(message) == null) {
 			return message;
 		}
@@ -391,7 +376,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return language.get(message);
 	}
 
-	protected String translateMessage(String message, Object... args) {  //%s 字符串 %n换行符
+	public String translateMessage(String message, Object... args) {  //%s 字符串 %n换行符
 		if (language.get(message) == null) {
 			return message;
 		}
@@ -494,10 +479,10 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 							return translateMessage("pay-value-error");
 						}
 						if (money < 0) {
-							return translateMessage("pay-value-error-2");
+							return translateMessage("pay-value-error-1");
 						}
-						if (money - to < Double.parseDouble(config.get("pay-1-limit").toString())) {
-							return translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(config.get("pay-1-limit").toString())), getMoneyUnit1());
+						if (money - to < Double.parseDouble(getConfig().get("pay-1-limit").toString())) {
+							return translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(getConfig().get("pay-1-limit").toString())), getMoneyUnit1());
 						}
 
 						p = Server.getInstance().getPlayer(args[0]);
@@ -538,8 +523,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 						if (money < 0) {
 							return translateMessage("pay-value-error-2");
 						}
-						if (money - to < Double.parseDouble(config.get("pay-2-limit").toString())) {
-							return translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(config.get("pay-2-limit").toString())), getMoneyUnit2());
+						if (money - to < Double.parseDouble(getConfig().get("pay-2-limit").toString())) {
+							return translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(getConfig().get("pay-2-limit").toString())), getMoneyUnit2());
 						}
 
 						p = Server.getInstance().getPlayer(args[0]);
@@ -748,16 +733,16 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 						}
 
 						int i;
-						String msg = translateMessage("list", (entry.getKey().equals("list-1") ? getMonetaryUnit1() : getMonetaryUnit2()), new Integer(args[0]), (pages + 1)) + "\n";
+						StringBuilder msg = new StringBuilder(translateMessage("list", (entry.getKey().equals("list-1") ? getMonetaryUnit1() : getMonetaryUnit2()), new Integer(args[0]), (pages + 1)) + "\n");
 						for (i = 6 * (new Integer(args[0]) - 1); i < 6 * new Integer(args[0]); i++) {
 							String value = getKeyByNumber(i, linkedHashMap);
 							String key = getValueByNumber(i, linkedHashMap);
 							if (key != null && value != null && !key.equals("") && !value.equals("")) {
-								msg += TextFormat.YELLOW + "No." + (i + 1) + " " + TextFormat.GOLD + value + TextFormat.AQUA + "  " + key + " \n";
+								msg.append(TextFormat.YELLOW).append("No.").append(i + 1).append(" ").append(TextFormat.GOLD).append(value).append(TextFormat.AQUA).append("  ").append(key).append(" \n");
 							}
 						}
 
-						return msg;
+						return msg.toString();
 					case "give-online-1":
 					case "give-online-2":
 						if (!poster.isOp()) {
@@ -811,6 +796,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	 *
 	 * @param needle Object
 	 * @param arr    Object
+	 *
 	 * @return boolean
 	 */
 	private static <T> boolean in_array(T needle, T[] arr) {
@@ -829,21 +815,26 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	 * ***********************
 	 */
 
+	@Override
 	public String getMoneyUnit1() {
 		return getMonetaryUnit1();
 	}
 
+	@Override
 	public String getMoneyUnit2() {
 		return getMonetaryUnit2();
 	}
 
+	@Override
+	@Deprecated
 	public String getMoneyUnit(boolean unit) {
 		return unit ? getMoneyUnit2() : getMoneyUnit1();
 	}
 
+	@Override
 	public String getMonetaryUnit1() {
 		try {
-			return config.get("money-unit-1").toString();
+			return getConfig().get("money-unit-1").toString();
 		} catch (Exception ignore) {
 
 		}
@@ -851,9 +842,10 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return null;
 	}
 
+	@Override
 	public String getMonetaryUnit2() {
 		try {
-			return config.get("money-unit-2").toString();
+			return getConfig().get("money-unit-2").toString();
 		} catch (Exception ignore) {
 
 		}
@@ -861,14 +853,16 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return null;
 	}
 
+	@Override
 	public String getMonetaryUnit(boolean unit) {
 		return unit ? getMonetaryUnit2() : getMonetaryUnit1();
 	}
 
 
+	@Override
 	public boolean isMoneyUnit2Enabled() {
 		try {
-			return Boolean.getBoolean(config.get("enable-unit-2").toString());
+			return Boolean.getBoolean(getConfig().get("enable-unit-2").toString());
 		} catch (Exception ignore) {
 
 		}
@@ -876,6 +870,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	}
 
 
+	@Override
+	@Deprecated
 	public Double getMoney(String player, boolean type) {
 		try {
 			if (type) {
@@ -890,19 +886,25 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return null;
 	}
 
+	@Override
+	@Deprecated
 	public Double getMoney(Player player, boolean type) {
 		return getMoney(player.getName(), type);
 	}
 
+	@Override
 	public Double getMoney(Player player) {
 		return getMoney(player.getName(), false);
 	}
 
+	@Override
 	public Double getMoney(String player) {
 		return getMoney(player, false);
 	}
 
 
+	@Override
+	@Deprecated
 	public void setMoney(String player, double money, boolean type) {
 		try {
 			if (type) {
@@ -923,28 +925,38 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		}
 	}
 
+	@Override
+	@Deprecated
 	public void setMoney(Player player, double money, boolean type) {
 		setMoney(player.getName(), money, type);
 	}
 
+	@Override
 	public void setMoney(Player player, double money) {
 		setMoney(player.getName(), money, false);
 	}
 
+	@Override
 	public void setMoney(String player, double money) {
 		setMoney(player, money, false);
 	}
 
 
+	@Override
+	@Deprecated
 	public void addMoney(Player player, double amount, boolean type) {
 		addMoney(player.getName(), amount, type);
 	}
 
+	//enumeration type
+	@Override
 	@SuppressWarnings("ConstantConditions")
+	@Deprecated
 	public void addMoney(String player, double amount, boolean type) {
 		setMoney(player, getMoney(player, type) + amount, type);
 	}
 
+	@Override
 	public void addMoney(String player, double amount) {
 		addMoney(player, amount, false);
 	}
@@ -953,12 +965,34 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		addMoney(player.getName(), amount, false);
 	}
 
+	@Override
+	public void reduceMoney(String player, double amount) {
+		addMoney(player, -amount);
+	}
 
+	@Override
+	public void reduceMoney(Player player, double amount) {
+		addMoney(player, -amount);
+	}
+
+	@Override
+	@Deprecated
+	public void reduceMoney(Player player, double amount, boolean type) {
+		addMoney(player, -amount, type);
+	}
+
+	@Override
+	@Deprecated
+	public void reduceMoney(String player, double amount, boolean type) {
+		addMoney(player, -amount, type);
+	}
+
+	@Override
 	public Double getBank(Player player) {
 		return getBank(player.getName());
 	}
 
-
+	@Override
 	public Double getBank(String player) {
 		try {
 			return Double.parseDouble(data.get(player, "bank"));
@@ -969,16 +1003,33 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return null;
 	}
 
-
+	@Override
 	public void setBank(Player player, double bank) {
 		setBank(player.getName(), bank);
 	}
 
+	@Override
 	public void setBank(String player, double bank) {
 		BankChangeEvent event = new BankChangeEvent(player, bank);
 		Server.getInstance().getPluginManager().callEvent(event);
 		if (!event.isCancelled()) {
 			data.set(player, "bank", Double.toString(event.getTarget()));
 		}
+	}
+
+
+	@Override
+	public void setAllMoney(final double amount){
+		setAllMoney(amount, CurrencyType.FIRST);
+	}
+
+	@Override
+	public void setAllMoney(final double amount, CurrencyType type){
+		final String k = type.booleanValue() ? "money1" : "money2";
+		final String v = String.valueOf(amount);
+		data.getData().replaceAll((key, value) -> {
+			value.put(k, v);
+			return value;
+		});
 	}
 }

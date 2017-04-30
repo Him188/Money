@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-class YAMLDatabase extends Database {
-	protected static Map<String, Map<String, String>> data;
+class YAMLDatabase {
+	protected Map<String, Map<String, String>> data; // TODO: 2017/4/25  non-static
 	private Money owner;
 	private String file;
 
@@ -18,18 +18,18 @@ class YAMLDatabase extends Database {
 	public YAMLDatabase(Money owner2) {
 		owner = owner2;
 
-		defaultValue.put("money1", owner.config.getOrDefault("initial-money-1", "").toString());
-		defaultValue.put("money2", owner.config.getOrDefault("initial-money-2", "").toString());
-		defaultValue.put("bank", owner.config.getOrDefault("initial-bank-money", "").toString());
+		defaultValue.put("money1", owner.getConfig().getString("initial-money-1", ""));
+		defaultValue.put("money2", owner.getConfig().getString("initial-money-2", ""));
+		defaultValue.put("bank", owner.getConfig().getString("initial-bank-money", ""));
 	}
 
 	public void initPlayer(String player) {
 		data.putIfAbsent(player, defaultValue);
 
 		Map<String, String> m = data.getOrDefault(player, new HashMap<>());
-		m.putIfAbsent("money1", owner.config.getOrDefault("initial-money-1", "").toString());
-		m.putIfAbsent("money2", owner.config.getOrDefault("initial-money-2", "").toString());
-		m.putIfAbsent("bank", owner.config.getOrDefault("initial-bank-money", "").toString());
+		m.putIfAbsent("money1", owner.getConfig().getString("initial-money-1", ""));
+		m.putIfAbsent("money2", owner.getConfig().getString("initial-money-2", ""));
+		m.putIfAbsent("bank", owner.getConfig().getString("initial-bank-money", ""));
 		data.putIfAbsent(player, m);
 	}
 
