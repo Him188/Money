@@ -1,6 +1,7 @@
 package money.command;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
@@ -11,10 +12,10 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
-public class SuperSet2Command extends MoneyCommand {
-	public SuperSet2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class GiveOnline1Command extends MoneyCommand {
+	public GiveOnline1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 	}
 
@@ -31,15 +32,20 @@ public class SuperSet2Command extends MoneyCommand {
 		}
 
 		if (args.length < 1) {
-			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("give-online-format-error", this.getName()));
 			return true;
 		}
 
 		double to = Double.parseDouble(args[0]); //TODO CATCH NUMBER FORMAT EXCEPTION
 
-		getPlugin().setAllMoney(to, CurrencyType.SECOND);
+		Server.getInstance().getOnlinePlayers().forEach((uuid, player) -> {
+			getPlugin().addMoney(player, to, CurrencyType.FIRST);
+			player.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), to, getPlugin().getMoneyUnit1()));
+		});
 
-		sender.sendMessage(getPlugin().translateMessage("super-set-success", getPlugin().getMoneyUnit2(), new Integer(args[0])));
+		getPlugin().setAllMoney(to, CurrencyType.FIRST);
+
+		sender.sendMessage(getPlugin().translateMessage("super-set-success", getPlugin().getMoneyUnit1(), to));
 		return true;
 	}
 }

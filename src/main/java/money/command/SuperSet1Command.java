@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
 public class SuperSet1Command extends MoneyCommand {
 	public SuperSet1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {

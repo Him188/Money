@@ -15,10 +15,10 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
-public class List1Command extends MoneyCommand {
-	public List1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class List2Command extends MoneyCommand {
+	public List2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 	}
 
@@ -36,7 +36,7 @@ public class List1Command extends MoneyCommand {
 		Server.getInstance().getScheduler().scheduleAsyncTask(getPlugin(), new AsyncTask() {
 			@Override
 			public void onRun() {
-				LinkedHashMap<String, String> linkedHashMap = Utils.sortMap(getPlugin().data.getData(), "money1");
+				LinkedHashMap<String, String> linkedHashMap = Utils.sortMap(getPlugin().data.getData(), "money2");
 
 				int pages = linkedHashMap.size() / 6;
 
@@ -56,7 +56,7 @@ public class List1Command extends MoneyCommand {
 				}
 
 				int i;
-				StringBuilder msg = new StringBuilder(getPlugin().translateMessage("list", getPlugin().getMoneyUnit1(), page, (pages + 1)) + "\n");
+				StringBuilder msg = new StringBuilder(getPlugin().translateMessage("list", getPlugin().getMoneyUnit2(), page, (pages + 1)) + "\n");
 				for (i = 6 * (page - 1); i < 6 * page; i++) {
 					String value = Utils.getKeyByNumber(i, linkedHashMap);
 					String key = Utils.getValueByNumber(i, linkedHashMap);

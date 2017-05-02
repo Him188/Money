@@ -4,46 +4,42 @@ import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
+import money.CurrencyType;
 import money.Money;
 
 import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
-public class BankSaveCommand extends MoneyCommand{
-	public BankSaveCommand(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class SuperSet2Command extends MoneyCommand {
+	public SuperSet2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!this.testPermission(sender)) {
 			sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
 			return true;
 		}
+
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
 			return true;
 		}
 
 		if (args.length < 1) {
-			sender.sendMessage(getPlugin().translateMessage("bank-save-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", this.getName()));
 			return true;
 		}
 
-		double to = Double.parseDouble(args[0]);
-		Double money = getPlugin().getMoney((Player) sender);
-		if (money < to) {
-			sender.sendMessage(getPlugin().translateMessage("bank-save-value-error"));
-			return true;
+		double to = Double.parseDouble(args[0]); //TODO CATCH NUMBER FORMAT EXCEPTION
 
-		}
-		getPlugin().setMoney((Player) sender, money - to);
-		getPlugin().reduceMoney((Player) sender, to);
+		getPlugin().setAllMoney(to, CurrencyType.SECOND);
 
-
-		sender.sendMessage(getPlugin().translateMessage("bank-save-success", Math.round(Double.parseDouble(args[0])), getPlugin().getMoneyUnit1()));
+		sender.sendMessage(getPlugin().translateMessage("super-set-success", getPlugin().getMoneyUnit2(), new Integer(args[0])));
 		return true;
 	}
 }

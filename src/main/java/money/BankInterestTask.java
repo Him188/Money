@@ -13,12 +13,6 @@ class BankInterestTask extends PluginTask<Money> {
 
 	@Override
 	public void onRun(int currentTick) {
-		count += 1;
-		if (count == 2) {
-			getOwner().save();
-			count = 0;
-		}
-
 		if (getOwner().bank_time > 0 && new Date().getTime() - getOwner().last_time >= getOwner().bank_time) {
 			getOwner().last_time += getOwner().bank_time;
 			getOwner().data.data.replaceAll((key, value) -> {

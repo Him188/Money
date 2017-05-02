@@ -12,10 +12,10 @@ import java.util.Objects;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
-public class Pay1Command extends MoneyCommand {
-	public Pay1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class Pay2Command extends MoneyCommand {
+	public Pay2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 	}
 
@@ -42,11 +42,11 @@ public class Pay1Command extends MoneyCommand {
 			return true;
 		}
 		if (money < 0) {
-			sender.sendMessage(this.getPlugin().translateMessage("pay-value-error-1"));
+			sender.sendMessage(this.getPlugin().translateMessage("pay-value-error-2"));
 			return true;
 		}
-		if (money - to < Double.parseDouble(getPlugin().getConfig().get("pay-1-limit").toString())) {
-			sender.sendMessage(this.getPlugin().translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(getPlugin().getConfig().get("pay-1-limit").toString())), getPlugin().getMoneyUnit1()));
+		if (money - to < Double.parseDouble(getPlugin().getConfig().get("pay-2-limit").toString())) {
+			sender.sendMessage(this.getPlugin().translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(getPlugin().getConfig().get("pay-2-limit").toString())), getPlugin().getMoneyUnit2()));
 			return true;
 		}
 
@@ -55,7 +55,7 @@ public class Pay1Command extends MoneyCommand {
 		if (p == null) {
 			name = args[0];
 		} else {
-			p.sendMessage(this.getPlugin().translateMessage("pay-for-you", Math.round(Double.parseDouble(args[1])), getPlugin().getMonetaryUnit1()));
+			p.sendMessage(this.getPlugin().translateMessage("pay-for-you", Math.round(Double.parseDouble(args[1])), getPlugin().getMonetaryUnit2()));
 			name = p.getName();
 		}
 
@@ -68,7 +68,7 @@ public class Pay1Command extends MoneyCommand {
 		getPlugin().reduceMoney((Player) sender, to);
 		getPlugin().addMoney((Player) sender, to);
 
-		sender.sendMessage(this.getPlugin().translateMessage("pay-success", Math.round(Double.parseDouble(args[1])), getPlugin().getMoneyUnit1(), name));
+		sender.sendMessage(this.getPlugin().translateMessage("pay-success", Math.round(Double.parseDouble(args[1])), getPlugin().getMoneyUnit2(), name));
 		return true;
 	}
 }

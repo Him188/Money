@@ -12,10 +12,10 @@ import java.util.Objects;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
-public class Give2Command extends MoneyCommand {
-	public Give2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class Set1Command extends MoneyCommand {
+	public Set1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 	}
 
@@ -32,7 +32,7 @@ public class Give2Command extends MoneyCommand {
 		}
 
 		if (args.length < 2) {
-			sender.sendMessage(this.getPlugin().translateMessage("give-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", this.getName()));
 			return true;
 		}
 
@@ -43,7 +43,7 @@ public class Give2Command extends MoneyCommand {
 		if (p == null) {
 			name = args[0];
 		} else {
-			p.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), new Long(args[1]), getPlugin().getMoneyUnit2()));
+			p.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), new Long(args[1]), getPlugin().getMoneyUnit1()));
 			name = p.getName();
 		}
 
@@ -51,9 +51,9 @@ public class Give2Command extends MoneyCommand {
 			sender.sendMessage(getPlugin().translateMessage("invalid-name", this.getName()));
 			return true;
 		}
-		getPlugin().addMoney(name, to, true);
+		getPlugin().setMoney(name, to);
 
-		sender.sendMessage(getPlugin().translateMessage("give-success", new Long(args[1]), getPlugin().getMoneyUnit2(), name));
+		sender.sendMessage(getPlugin().translateMessage("set-success", new Long(args[1]), getPlugin().getMoneyUnit1(), name));
 		return true;
 	}
 }

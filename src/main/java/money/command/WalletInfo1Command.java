@@ -10,10 +10,10 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
-public class WalletInfo2Command extends MoneyCommand {
-	public WalletInfo2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class WalletInfo1Command extends MoneyCommand{
+	public WalletInfo1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 	}
 
@@ -28,7 +28,7 @@ public class WalletInfo2Command extends MoneyCommand {
 			return true;
 		}
 
-		sender.sendMessage(this.getPlugin().translateMessage("your-money-2", Math.round(getPlugin().getMoney((Player) sender, false)), getPlugin().getMoneyUnit1()));
+		sender.sendMessage(this.getPlugin().translateMessage("your-money-1", Math.round(getPlugin().getMoney((Player) sender, false)), getPlugin().getMoneyUnit1()));
 		return true;
 	}
 }

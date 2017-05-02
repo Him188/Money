@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 1.0.0
+ * @since Money 2.0.0
  */
 public class BankTakeCommand extends MoneyCommand{
 	public BankTakeCommand(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {

@@ -154,6 +154,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		} else {
 			init();
 		}
+
+
 	}
 
 	public void init() {
@@ -273,17 +275,23 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 				Server.getInstance().getCommandMap().register(key, cmd);
 			});
 
-			Server.getInstance().getScheduler().scheduleDelayedTask(new BankInterestTask(this), 1200);
+			Server.getInstance().getScheduler().scheduleDelayedTask(this, new BankInterestTask(this), 1200);
+			Server.getInstance().getScheduler().scheduleDelayedTask(this, this::saveConfig, 1200);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		Server.getInstance().getPluginManager().registerEvents(this, this);
+		Server.getInstance().getPluginManager().registerEvents(this, this); // TODO: 2017/5/1 Event 分开
+	}
+
+	@Override
+	public void saveConfig() {
+		data.save();
 	}
 
 	@Override
 	public void onDisable() {
-		save();
+		saveConfig();
 	}
 
 
@@ -339,10 +347,6 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent event) {
 		data.initPlayer(event.getPlayer().getName());
-	}
-
-	protected void save() {
-		data.save();
 	}
 
 	protected String getLanguage() {
@@ -422,23 +426,12 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	}
 
 	@Override
-	public String getMoneyUnit2() {
-		return getMonetaryUnit2();
-	}
-
-	@Override
-	@Deprecated
-	public String getMoneyUnit(boolean unit) {
-		return unit ? getMoneyUnit2() : getMoneyUnit1();
-	}
-
-	@Override
-	public String getMonetaryUnit(CurrencyType unit) {
-		return null;
-	}
-
-	@Override
 	public String getMonetaryUnit1() {
+		return getCurrency1();
+	}
+
+	@Override
+	public String getCurrency1() {
 		try {
 			return getConfig().get("money-unit-1").toString();
 		} catch (Exception ignore) {
@@ -448,8 +441,35 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return null;
 	}
 
+
+	@Override
+	public String getMoneyUnit2() {
+		return getMonetaryUnit2();
+	}
+
+	@Override
+	public String getCurrency(CurrencyType type) {
+		return type.booleanValue() ? getMoneyUnit2() : getMoneyUnit1();
+	}
+
+	@Override
+	@Deprecated
+	public String getMoneyUnit(boolean unit) {
+		return getCurrency(CurrencyType.fromBoolean(unit));
+	}
+
+	@Override
+	public String getMonetaryUnit(CurrencyType unit) {
+		return getCurrency(unit);
+	}
+
 	@Override
 	public String getMonetaryUnit2() {
+		return getCurrency2();
+	}
+
+	@Override
+	public String getCurrency2() {
 		try {
 			return getConfig().get("money-unit-2").toString();
 		} catch (Exception ignore) {
@@ -461,12 +481,12 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@Override
 	public String getMoneyUnit(CurrencyType type) {
-		return type.booleanValue() ? getMoneyUnit2() : getMoneyUnit1();
+		return getCurrency(type);
 	}
 
 	@Override
 	public String getMonetaryUnit(boolean unit) {
-		return unit ? getMonetaryUnit2() : getMonetaryUnit1();
+		return getCurrency(CurrencyType.fromBoolean(unit));
 	}
 
 
@@ -477,6 +497,11 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		} catch (Exception ignore) {
 
 		}
+		return false;
+	}
+
+	@Override
+	public boolean isCurrency2Enabled() {
 		return false;
 	}
 
@@ -626,6 +651,16 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	@Deprecated
 	public void reduceMoney(String player, double amount, boolean type) {
 		addMoney(player, -amount, type);
+	}
+
+	@Override
+	public void reduceMoney(Player player, double amount, CurrencyType type) {
+
+	}
+
+	@Override
+	public void reduceMoney(String player, double amount, CurrencyType type) {
+
 	}
 
 	@Override

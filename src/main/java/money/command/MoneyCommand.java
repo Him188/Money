@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money
+ * @since Money 2.0.0
  */
 public abstract class MoneyCommand extends PluginCommand<Money> implements CommandExecutor {
 	public MoneyCommand(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {

@@ -24,27 +24,28 @@ public interface MoneyAPI {
 	 * 获取第一种货币 String 值
 	 *
 	 * @return String
-	 *
-	 * @see Money#getMoneyUnit1()
-	 * @see Money#getMonetaryUnit1()
 	 */
+	@Deprecated
 	String getMoneyUnit1();
 
+	@Deprecated
 	String getMonetaryUnit1();
+
+	String getCurrency1();
 
 
 	/**
 	 * 获取第二种货币 String 值
 	 *
 	 * @return String
-	 *
-	 * @see Money#getMoneyUnit2()
-	 * @see Money#getMonetaryUnit2()
 	 */
+	@Deprecated
 	String getMoneyUnit2();
 
+	@Deprecated
 	String getMonetaryUnit2();
 
+	String getCurrency2();
 
 	/**
 	 * 获取第一/二种货币 String 值
@@ -53,12 +54,16 @@ public interface MoneyAPI {
 	 *
 	 * @return 第一/二种货币 String 值
 	 */
+	@Deprecated
 	String getMoneyUnit(CurrencyType type);
 
 	@Deprecated
-	String getMoneyUnit(boolean unit);
+	String getMonetaryUnit(CurrencyType type);
 
-	String getMonetaryUnit(CurrencyType unit);
+	String getCurrency(CurrencyType type);
+
+	@Deprecated
+	String getMoneyUnit(boolean unit);
 
 	@Deprecated
 	String getMonetaryUnit(boolean unit);
@@ -71,7 +76,10 @@ public interface MoneyAPI {
 	 *
 	 * @see Money
 	 */
+	@Deprecated
 	boolean isMoneyUnit2Enabled();
+
+	boolean isCurrency2Enabled();
 
 
 	/**
@@ -81,9 +89,6 @@ public interface MoneyAPI {
 	 * @param type   货币类型. true: 货币2, false: 货币1
 	 *
 	 * @return double
-	 *
-	 * @see Money#getMoney(String, boolean)
-	 * @see Money#getMoney(Player, boolean)
 	 */
 	@Deprecated
 	Double getMoney(String player, boolean type);
@@ -102,12 +107,8 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 *
 	 * @return double
-	 *
-	 * @see Money#getMoney(String)
-	 * @see Money#getMoney(Player)
 	 */
 	Double getMoney(String player);
-
 
 	Double getMoney(Player player);
 
@@ -118,9 +119,6 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 * @param money  数量
 	 * @param type   货币类型. true: 货币2, false: 货币1
-	 *
-	 * @see Money#setMoney(String, double, boolean)
-	 * @see Money#setMoney(Player, double, boolean)
 	 */
 	@Deprecated
 	void setMoney(String player, double money, boolean type);
@@ -133,15 +131,11 @@ public interface MoneyAPI {
 	void setMoney(Player player, double money, CurrencyType type);
 
 
-
 	/**
 	 * 设置一个玩家的货币1数量
 	 *
 	 * @param player 玩家名
 	 * @param money  数量
-	 *
-	 * @see Money#setMoney(String, double)
-	 * @see Money#setMoney(Player, double)
 	 */
 	void setMoney(String player, double money);
 
@@ -154,9 +148,6 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 *
 	 * @return double
-	 *
-	 * @see Money#getBank(String)
-	 * @see Money#getBank(Player)
 	 */
 	Double getBank(Player player);
 
@@ -234,9 +225,15 @@ public interface MoneyAPI {
 	 * @see Money#reduceMoney(String, double)
 	 * @see Money#reduceMoney(Player, double)
 	 */
+	@Deprecated
 	void reduceMoney(Player player, double amount, boolean type);
 
+	@Deprecated
 	void reduceMoney(String player, double amount, boolean type);
+
+	void reduceMoney(Player player, double amount, CurrencyType type);
+
+	void reduceMoney(String player, double amount, CurrencyType type);
 
 
 	/**

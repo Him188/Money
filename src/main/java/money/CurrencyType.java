@@ -48,9 +48,10 @@ public enum CurrencyType {
 
 	@Override
 	public String toString() {
-		return MoneyAPI.getInstance().getMoneyUnit(this);
+		return MoneyAPI.getInstance().getCurrency(this);
 	}
 
+	// TODO: 2017/4/30 javadoc
 	public static CurrencyType fromBoolean(boolean booleanValue){
 		return booleanValue ? SECOND : FIRST;
 	}
