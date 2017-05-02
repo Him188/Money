@@ -17,6 +17,8 @@ import cn.nukkit.utils.TextFormat;
 import money.command.*;
 import money.event.BankChangeEvent;
 import money.event.MoneyChangeEvent;
+import net.mamoe.moedb.db.ConfigDatabase;
+import net.mamoe.moedb.db.KeyValueDatabase;
 
 import java.io.File;
 import java.util.*;
@@ -31,7 +33,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	private static Money instance = null;
 
 	private Map<String, String> language = new HashMap<>();
-	public YAMLDatabase data = null;
+	public KeyValueDatabase db = null;
 	private Map<String, String> commands = new HashMap<>();
 
 	protected long bank_time = 0L;
@@ -286,14 +288,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@Override
 	public void saveConfig() {
-		data.save();
-	}
 
-	@Override
-	public void onDisable() {
-		saveConfig();
 	}
-
 
 	private void initLanguage() {
 		Map<String, Object> c = new Config(getDataFolder() + "/Language.yml", Config.YAML).getAll();
@@ -346,10 +342,12 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent event) {
-		data.initPlayer(event.getPlayer().getName());
+		db.hashSet(event.getPlayer().getName(), "money1", getConfig().getDouble("initial-money-1", 0));
+		db.hashSet(event.getPlayer().getName(), "money2", getConfig().getDouble("initial-money-2", 0));
+		db.hashSet(event.getPlayer().getName(), "bank", getConfig().getDouble("initial-bank-money", 0));
 	}
 
-	protected String getLanguage() {
+	String getLanguage() {
 		try {
 			return (String) getConfig().get("language");
 		} catch (Exception ignore) {
@@ -378,22 +376,23 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 		new File(getDataFolder() + "/Config_default.yml").delete();
 
-		data.data.putIfAbsent("__BANK__", new HashMap<>());
+		Map<String, Object> val = db.hashGetAll("__BANK__");
 
 		last_time = new Date().getTime();
-		data.data.get("__BANK__").put("time", Long.toString(last_time));
+
+		db.hashSet("__BANK__", "time", Long.toString(last_time));
+
 		bank_time = Long.parseLong(getConfig().getAll().getOrDefault("bank-interest-time", 0).toString()) * 1000;
 		bank_interest = 1 + Double.parseDouble(getConfig().getAll().getOrDefault("bank-interest-value", 0).toString());
 	}
 
 	private void initDatabase() {
-		data = new YAMLDatabase(this);
-		if (!data.loadFile(getDataFolder() + "/Data.yml")) {
-			this.getLogger().warning(translateMessage("load-Database-error"));
-			this.getLogger().warning(translateMessage("stop-plugin"));
-			Server.getInstance().getPluginManager().disablePlugin(this);
-			return;
+		if (new File(getDataFolder() + "/Data.yml").exists()) {
+			// TODO: 2017/5/2 convert to new db
+
 		}
+
+		db = new ConfigDatabase(new Config(getDataFolder() + "/db.dat", Config.YAML));
 	}
 
 
@@ -502,114 +501,103 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@Override
 	public boolean isCurrency2Enabled() {
-		return false;
+		return isMoneyUnit2Enabled();
 	}
 
 
 	@Override
 	@Deprecated
-	public Double getMoney(String player, boolean type) {
+	public double getMoney(String player, boolean type) {
+		return getMoney(player, CurrencyType.fromBoolean(type));
+	}
+
+	@Override
+	@Deprecated
+	public double getMoney(Player player, boolean type) {
+		return getMoney(player.getName(), CurrencyType.fromBoolean(type));
+	}
+
+	@Override
+	public double getMoney(String player, CurrencyType type) {
 		try {
-			if (type) {
-				return Double.parseDouble(data.get(player, "money2"));
+			if (type == CurrencyType.FIRST) {
+				return (Double) db.hashGet(player, "money1");
 			} else {
-				return Double.parseDouble(data.get(player, "money1"));
+				return (Double) db.hashGet(player, "money2");
 			}
-		} catch (Exception ignore) {
-
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		return null;
+		return 0D;
 	}
 
 	@Override
-	@Deprecated
-	public Double getMoney(Player player, boolean type) {
+	public double getMoney(Player player, CurrencyType type) {
 		return getMoney(player.getName(), type);
 	}
 
 	@Override
-	public Double getMoney(String player, CurrencyType type) {
-		return null;
+	public double getMoney(Player player) {
+		return getMoney(player.getName(), CurrencyType.FIRST);
 	}
 
 	@Override
-	public Double getMoney(Player player, CurrencyType type) {
-		return null;
-	}
-
-	@Override
-	public Double getMoney(Player player) {
-		return getMoney(player.getName(), false);
-	}
-
-	@Override
-	public Double getMoney(String player) {
-		return getMoney(player, false);
+	public double getMoney(String player) {
+		return getMoney(player, CurrencyType.SECOND);
 	}
 
 
 	@Override
 	@Deprecated
 	public void setMoney(String player, double money, boolean type) {
-		try {
-			if (type) {
-				MoneyChangeEvent event = new MoneyChangeEvent(player, money, true);
-				Server.getInstance().getPluginManager().callEvent(event);
-				if (!event.isCancelled()) {
-					data.set(player, "money2", Double.toString(event.getTarget()));
-				}
-			} else {
-				MoneyChangeEvent event = new MoneyChangeEvent(player, money, false);
-				Server.getInstance().getPluginManager().callEvent(event);
-				if (!event.isCancelled()) {
-					data.set(player, "money1", Double.toString(event.getTarget()));
-				}
-			}
-		} catch (Exception ignore) {
-
-		}
+		setMoney(player, money, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	@Deprecated
 	public void setMoney(Player player, double money, boolean type) {
-		setMoney(player.getName(), money, type);
+		setMoney(player, money, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	public void setMoney(String player, double money, CurrencyType type) {
-
+		MoneyChangeEvent event = new MoneyChangeEvent(player, money, type);
+		Server.getInstance().getPluginManager().callEvent(event);
+		if (!event.isCancelled()) {
+			if (type == CurrencyType.FIRST) {
+				db.hashSet(player, "money1", event.getTarget());
+			} else {
+				db.hashSet(player, "money2", event.getTarget());
+			}
+		}
 	}
 
 	@Override
 	public void setMoney(Player player, double money, CurrencyType type) {
-
+		setMoney(player.getName(), money, type);
 	}
 
 	@Override
 	public void setMoney(Player player, double money) {
-		setMoney(player.getName(), money, false);
+		setMoney(player.getName(), money, CurrencyType.FIRST);
 	}
 
 	@Override
 	public void setMoney(String player, double money) {
-		setMoney(player, money, false);
+		setMoney(player, money, CurrencyType.FIRST);
 	}
 
 
 	@Override
 	@Deprecated
 	public void addMoney(Player player, double amount, boolean type) {
-		addMoney(player.getName(), amount, type);
+		addMoney(player.getName(), amount, CurrencyType.fromBoolean(type));
 	}
 
-	//enumeration type
 	@Override
-	@SuppressWarnings("ConstantConditions")
 	@Deprecated
 	public void addMoney(String player, double amount, boolean type) {
-		setMoney(player, getMoney(player, type) + amount, type);
+		setMoney(player, getMoney(player, CurrencyType.fromBoolean(type)) + amount, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
@@ -624,11 +612,11 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@Override
 	public void addMoney(String player, double amount) {
-		addMoney(player, amount, false);
+		addMoney(player, amount, CurrencyType.FIRST);
 	}
 
 	public void addMoney(Player player, double amount) {
-		addMoney(player.getName(), amount, false);
+		addMoney(player.getName(), amount, CurrencyType.FIRST);
 	}
 
 	@Override
@@ -644,39 +632,39 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	@Override
 	@Deprecated
 	public void reduceMoney(Player player, double amount, boolean type) {
-		addMoney(player, -amount, type);
+		addMoney(player, -amount, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	@Deprecated
 	public void reduceMoney(String player, double amount, boolean type) {
-		addMoney(player, -amount, type);
+		addMoney(player, -amount, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	public void reduceMoney(Player player, double amount, CurrencyType type) {
-
+		reduceMoney(player.getName(), amount, type);
 	}
 
 	@Override
 	public void reduceMoney(String player, double amount, CurrencyType type) {
-
+		addMoney(player, -amount, type);
 	}
 
 	@Override
-	public Double getBank(Player player) {
+	public double getBank(Player player) {
 		return getBank(player.getName());
 	}
 
 	@Override
-	public Double getBank(String player) {
+	public double getBank(String player) {
 		try {
-			return Double.parseDouble(data.get(player, "bank"));
+			return (double) db.hashGet(player, "bank");
 		} catch (Exception ignore) {
 
 		}
 
-		return null;
+		return 0D;
 	}
 
 	@Override
@@ -689,7 +677,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		BankChangeEvent event = new BankChangeEvent(player, bank);
 		Server.getInstance().getPluginManager().callEvent(event);
 		if (!event.isCancelled()) {
-			data.set(player, "bank", Double.toString(event.getTarget()));
+			db.hashSet(player, "bank", event.getTarget());
 		}
 	}
 
@@ -702,10 +690,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	@Override
 	public void setAllMoney(final double amount, CurrencyType type) {
 		final String k = type.booleanValue() ? "money1" : "money2";
-		final String v = String.valueOf(amount);
-		data.getData().replaceAll((key, value) -> {
-			value.put(k, v);
-			return value;
-		});
+
+		for (String s : db.getKeys()) {
+			if (db.hashGetAll(s).isEmpty()) {
+				continue; // not a map's key
+			}
+
+			db.hashSet(s, k, amount);
+		}
 	}
 }

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
+import money.CurrencyType;
 import money.Money;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public class WalletInfo1Command extends MoneyCommand{
 			return true;
 		}
 
-		sender.sendMessage(this.getPlugin().translateMessage("your-money-1", Math.round(getPlugin().getMoney((Player) sender, false)), getPlugin().getMoneyUnit1()));
+		sender.sendMessage(this.getPlugin().translateMessage("your-money-1", Math.round(getPlugin().getMoney((Player) sender, CurrencyType.FIRST)), getPlugin().getMoneyUnit1()));
 		return true;
 	}
 }

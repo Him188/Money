@@ -35,8 +35,14 @@ public class SuperSet1Command extends MoneyCommand {
 			return true;
 		}
 
-		double to = Double.parseDouble(args[0]); //TODO CATCH NUMBER FORMAT EXCEPTION
+		double to;
 
+		try {
+			to = Double.parseDouble(args[0]);
+		} catch (NumberFormatException e) {
+			sender.sendMessage(this.getPlugin().translateMessage("number-format-error"));
+			return true;
+		}
 		getPlugin().setAllMoney(to, CurrencyType.FIRST);
 
 		sender.sendMessage(getPlugin().translateMessage("super-set-success", getPlugin().getMoneyUnit1(), new Integer(args[0])));

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
+import money.CurrencyType;
 import money.Money;
 import money.Utils;
 
@@ -51,7 +52,7 @@ public class Set2Command extends MoneyCommand {
 			sender.sendMessage(getPlugin().translateMessage("invalid-name", this.getName()));
 			return true;
 		}
-		getPlugin().setMoney(name, to, true);
+		getPlugin().setMoney(name, to, CurrencyType.SECOND);
 
 		sender.sendMessage(getPlugin().translateMessage("set-success", new Long(args[1]), getPlugin().getMoneyUnit2(), name));
 		return true;

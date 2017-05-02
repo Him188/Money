@@ -91,14 +91,14 @@ public interface MoneyAPI {
 	 * @return double
 	 */
 	@Deprecated
-	Double getMoney(String player, boolean type);
+	double getMoney(String player, boolean type);
 
 	@Deprecated
-	Double getMoney(Player player, boolean type);
+	double getMoney(Player player, boolean type);
 
-	Double getMoney(String player, CurrencyType type);
+	double getMoney(String player, CurrencyType type);
 
-	Double getMoney(Player player, CurrencyType type);
+	double getMoney(Player player, CurrencyType type);
 
 
 	/**
@@ -108,9 +108,9 @@ public interface MoneyAPI {
 	 *
 	 * @return double
 	 */
-	Double getMoney(String player);
+	double getMoney(String player);
 
-	Double getMoney(Player player);
+	double getMoney(Player player);
 
 
 	/**
@@ -149,9 +149,9 @@ public interface MoneyAPI {
 	 *
 	 * @return double
 	 */
-	Double getBank(Player player);
+	double getBank(Player player);
 
-	Double getBank(String player);
+	double getBank(String player);
 
 	/**
 	 * 设置一个玩家的银行储蓄

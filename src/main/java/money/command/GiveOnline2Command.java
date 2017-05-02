@@ -36,8 +36,14 @@ public class GiveOnline2Command extends MoneyCommand {
 			return true;
 		}
 
-		double to = Double.parseDouble(args[0]); //TODO CATCH NUMBER FORMAT EXCEPTION
+		double to;
 
+		try {
+			to = Double.parseDouble(args[0]);
+		} catch (NumberFormatException e) {
+			sender.sendMessage(this.getPlugin().translateMessage("number-format-error"));
+			return true;
+		}
 		Server.getInstance().getOnlinePlayers().forEach((uuid, player) -> {
 			getPlugin().addMoney(player, to, CurrencyType.SECOND);
 			player.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), to, getPlugin().getMoneyUnit2()));
