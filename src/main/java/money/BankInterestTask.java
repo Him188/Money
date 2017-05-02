@@ -5,11 +5,11 @@ import cn.nukkit.scheduler.PluginTask;
 import java.util.Date;
 
 class BankInterestTask extends PluginTask<Money> {
-	private int count = 0;
-
 	public BankInterestTask(Money money) {
 		super(money);
 	}
+
+	// TODO: 2017/5/2 analyze
 
 	@Override
 	public void onRun(int currentTick) {
