@@ -21,8 +21,8 @@ updateInfo-1.1.0:
 
 updateinfo-1.2.0:
 - "2016-06-08 新增 事件系统(money.event.money.MoneyChangeEvent, Money.event.BankChangeEvent)"
-- "2016-06-08 修改 money.Money#setMoney(String, double, boolean)"
-- "2016-06-08 修改 money.Money#setBank(String, double)"
+- "2016-06-08 修改 money.Money#setMoney(String, float, boolean)"
+- "2016-06-08 修改 money.Money#setBank(String, float)"
 
 updateInfo-1.2.1:
 - "2016-06-08 修复 语言文件一个bug"
@@ -32,11 +32,11 @@ updateInfo-1.2.2:
 - "2016-06-19 新增 money.Money#getMonetaryUnit2(). 使用效果同 money.Money#getMoneyUnit2()"
 
 updateInfo-1.3.0:
-- "2016-07-08 修改 API 中所有 Double 类型参数为 double 类型参数. 返回值不变化"
-- "2016-07-08 新增 money.Money#addMoney(Player player, double amount, boolean type)"
-- "2016-07-08 新增 money.Money#addMoney(String player, double amount, boolean type)"
-- "2016-07-08 新增 money.Money#addMoney(Player player, double amount)"
-- "2016-07-08 新增 money.Money#addMoney(String player, double amount)"
+- "2016-07-08 修改 API 中所有 Float 类型参数为 float 类型参数. 返回值不变化"
+- "2016-07-08 新增 money.Money#addMoney(Player player, float amount, boolean type)"
+- "2016-07-08 新增 money.Money#addMoney(String player, float amount, boolean type)"
+- "2016-07-08 新增 money.Money#addMoney(Player player, float amount)"
+- "2016-07-08 新增 money.Money#addMoney(String player, float amount)"
 - "2016-07-08 优化 运行效率"
 
 updateInfo-1.4.0:

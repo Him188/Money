@@ -22,7 +22,7 @@ public final class Utils {
 		return Server.getInstance().getPlayer(name);
 	}
 
-	public static LinkedHashMap<String, String> sortMap(Map<String, Map<String, String>> data, String key) {
+	public static LinkedHashMap<String, String> sortMap(LinkedHashMap<String, LinkedHashMap<String, String>> data, String key) {
 		HashMap<String, String> map = new HashMap<>();
 		data.forEach((k, value) -> {
 			IPlayer p1 = Server.getInstance().getOfflinePlayer(k);
@@ -39,7 +39,7 @@ public final class Utils {
 
 		ArrayList<String> list = new ArrayList<>(map.values());
 
-		list.sort((a, b) -> new Double(b).compareTo(new Double(a)));
+		list.sort((a, b) -> new Float(b).compareTo(new Float(a)));
 		LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
 		HashSet<String> set = new HashSet<>();
 		list.forEach((value) -> {
@@ -86,23 +86,5 @@ public final class Utils {
 		}
 
 		return null;
-	}
-
-	/**
-	 * 判断 needle 是否存在于数组 arr 的值中.
-	 *
-	 * @param needle Object
-	 * @param arr    Object
-	 *
-	 * @return boolean
-	 */
-	public static <T> boolean in_array(T needle, T[] arr) {
-		for (T value : arr) {
-			if (Objects.equals(value, needle)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

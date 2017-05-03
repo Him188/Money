@@ -17,6 +17,6 @@ public abstract class MoneyCommand extends PluginCommand<Money> implements Comma
 		this.setExecutor(this);
 		this.setAliases(aliases);
 		this.setCommandParameters(commandParameters);
-		this.setPermission("money.command"); // TODO: 2017/4/30 PERMISSIONS FOR EACH COMMAND
+		this.setPermission("money.command");
 	}
 }

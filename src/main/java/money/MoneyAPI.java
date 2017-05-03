@@ -1,6 +1,14 @@
 package money;
 
 import cn.nukkit.Player;
+import money.event.bank.BankChangeEvent;
+import money.event.bank.BankDecreaseEvent;
+import money.event.bank.BankIncreaseEvent;
+import money.event.money.MoneyChangeEvent;
+import money.event.money.MoneyDecreaseEvent;
+import money.event.money.MoneyIncreaseEvent;
+
+import java.util.Set;
 
 /**
  * Money API
@@ -11,9 +19,8 @@ import cn.nukkit.Player;
  */
 public interface MoneyAPI {
 	/**
-	 * @return 插件已加载时 {@link Money}; 未开启时 {@code null}
-	 *
 	 * @see Money#getInstance()
+	 * @since Money 1.0.0p0p
 	 */
 	static Money getInstance() {
 		return Money.getInstance();
@@ -24,6 +31,8 @@ public interface MoneyAPI {
 	 * 获取第一种货币 String 值
 	 *
 	 * @return String
+	 *
+	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	String getMoneyUnit1();
@@ -38,6 +47,8 @@ public interface MoneyAPI {
 	 * 获取第二种货币 String 值
 	 *
 	 * @return String
+	 *
+	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	String getMoneyUnit2();
@@ -53,14 +64,16 @@ public interface MoneyAPI {
 	 * @param type 类型
 	 *
 	 * @return 第一/二种货币 String 值
+	 *
+	 * @since Money 1.0.0
 	 */
+	String getCurrency(CurrencyType type);
+
 	@Deprecated
 	String getMoneyUnit(CurrencyType type);
 
 	@Deprecated
 	String getMonetaryUnit(CurrencyType type);
-
-	String getCurrency(CurrencyType type);
 
 	@Deprecated
 	String getMoneyUnit(boolean unit);
@@ -75,6 +88,7 @@ public interface MoneyAPI {
 	 * @return boolean
 	 *
 	 * @see Money
+	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	boolean isMoneyUnit2Enabled();
@@ -83,168 +97,263 @@ public interface MoneyAPI {
 
 
 	/**
-	 * 获取一个玩家的货币数量. 如果玩家不存在, 将返回 null
+	 * 获取一个玩家的货币数量. 如果玩家不存在, 将返回 0
 	 *
 	 * @param player 玩家名
 	 * @param type   货币类型. true: 货币2, false: 货币1
 	 *
-	 * @return double
+	 * @return float
+	 *
+	 * @since Money 1.0.0
 	 */
 	@Deprecated
-	double getMoney(String player, boolean type);
+	float getMoney(String player, boolean type);
 
 	@Deprecated
-	double getMoney(Player player, boolean type);
+	float getMoney(Player player, boolean type);
 
-	double getMoney(String player, CurrencyType type);
+	float getMoney(String player, CurrencyType type);
 
-	double getMoney(Player player, CurrencyType type);
+	float getMoney(Player player, CurrencyType type);
 
 
 	/**
-	 * 获取一个玩家的货币1数量. 如果玩家不存在, 将返回 null
+	 * 获取一个玩家的货币1数量. 如果玩家不存在, 将返回 0
 	 *
 	 * @param player 玩家名
 	 *
-	 * @return double
+	 * @return float
+	 *
+	 * @since Money 1.0.0
 	 */
-	double getMoney(String player);
+	float getMoney(String player);
 
-	double getMoney(Player player);
+	float getMoney(Player player);
 
 
 	/**
-	 * 设置一个玩家的货币数量.
+	 * 设置一个玩家的货币数量. 会触发 {@link MoneyChangeEvent}
 	 *
 	 * @param player 玩家名
 	 * @param money  数量
+	 * @param type   货币类型
+	 *
+	 * @since Money 1.0.0
+	 */
+	@Deprecated
+	boolean setMoney(String player, float money, boolean type);
+
+	@Deprecated
+	boolean setMoney(Player player, float money, boolean type);
+
+	boolean setMoney(String player, float money, CurrencyType type);
+
+	boolean setMoney(Player player, float money, CurrencyType type);
+
+
+	/**
+	 * 设置一个玩家的货币1 数量. 会触发 {@link MoneyChangeEvent}
+	 *
+	 * @param player 玩家名
+	 * @param money  数量
+	 *
+	 * @since Money 1.0.0
+	 */
+	boolean setMoney(String player, float money);
+
+	boolean setMoney(Player player, float money);
+
+
+	/**
+	 * 获取一个玩家的银行储蓄. 如果玩家不存在, 将返回 0
+	 *
+	 * @param player 玩家名
+	 *
+	 * @return float
+	 *
+	 * @since Money 1.0.0
+	 */
+	float getBank(Player player);
+
+	float getBank(String player);
+
+
+	/**
+	 * 设置一个玩家的银行储蓄. 会触发 {@link BankChangeEvent}
+	 *
+	 * @param player 玩家名
+	 * @param money  数量
+	 *
+	 * @see Money#setBank(String, float)
+	 * @see Money#setBank(Player, float)
+	 * @since Money 1.0.0
+	 */
+	boolean setBank(String player, float money);
+
+	boolean setBank(Player player, float money);
+
+
+	/**
+	 * 增加一个玩家的货币1数量. 会触发 {@link MoneyIncreaseEvent} 随后触发 {@link MoneyChangeEvent}
+	 *
+	 * @param player 玩家名
+	 * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, float)})
+	 *
+	 * @since Money 1.3.0
+	 */
+	boolean addMoney(String player, float amount);
+
+	boolean addMoney(Player player, float amount);
+
+
+	/**
+	 * 增加一个玩家的货币数量. 会触发 {@link MoneyIncreaseEvent} 随后触发 {@link MoneyChangeEvent}
+	 *
+	 * @param player 玩家名
+	 * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, float, CurrencyType)})
 	 * @param type   货币类型. true: 货币2, false: 货币1
+	 *
+	 * @since Money 1.3.0
 	 */
-	@Deprecated
-	void setMoney(String player, double money, boolean type);
 
-	@Deprecated
-	void setMoney(Player player, double money, boolean type);
+	boolean addMoney(String player, float amount, CurrencyType type);
 
-	void setMoney(String player, double money, CurrencyType type);
-
-	void setMoney(Player player, double money, CurrencyType type);
-
-
-	/**
-	 * 设置一个玩家的货币1数量
-	 *
-	 * @param player 玩家名
-	 * @param money  数量
-	 */
-	void setMoney(String player, double money);
-
-	void setMoney(Player player, double money);
-
-
-	/**
-	 * 获取一个玩家的银行储蓄. 如果玩家不存在, 将返回 null
-	 *
-	 * @param player 玩家名
-	 *
-	 * @return double
-	 */
-	double getBank(Player player);
-
-	double getBank(String player);
-
-	/**
-	 * 设置一个玩家的银行储蓄
-	 *
-	 * @param player 玩家名
-	 * @param money  数量
-	 *
-	 * @see Money#setBank(String, double)
-	 * @see Money#setBank(Player, double)
-	 */
-	void setBank(String player, double money);
-
-	void setBank(Player player, double money);
-
-	/**
-	 * 增加一个玩家的货币1数量
-	 *
-	 * @param player 玩家名
-	 * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, double)})
-	 *
-	 * @see Money#addMoney(String, double)
-	 * @see Money#addMoney(Player, double)
-	 */
-	void addMoney(String player, double amount);
-
-	void addMoney(Player player, double amount);
-
-
-	/**
-	 * 增加一个玩家的货币数量
-	 *
-	 * @param player 玩家名
-	 * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, double, boolean)})
-	 * @param type   货币类型. true: 货币2, false: 货币1
-	 *
-	 * @see Money#addMoney(String, double)
-	 * @see Money#addMoney(Player, double)
-	 */
-	@Deprecated
-	void addMoney(Player player, double amount, boolean type);
+	boolean addMoney(Player player, float amount, CurrencyType type);
 
 	@Deprecated
-	void addMoney(String player, double amount, boolean type);
+	boolean addMoney(Player player, float amount, boolean type);
 
-	void addMoney(Player player, double amount, CurrencyType type);
-
-	void addMoney(String player, double amount, CurrencyType type);
-
+	@Deprecated
+	boolean addMoney(String player, float amount, boolean type);
 
 	/**
-	 * 减少一个玩家的货币1数量
+	 * 减少一个玩家的货币1数量. 会触发 {@link MoneyDecreaseEvent} 随后触发 {@link MoneyChangeEvent}
 	 *
 	 * @param player 玩家名
 	 * @param amount 数量.
 	 *
-	 * @see Money#reduceMoney(String, double)
-	 * @see Money#reduceMoney(Player, double)
+	 * @since Money 2.0.0
 	 */
-	void reduceMoney(String player, double amount);
+	boolean reduceMoney(String player, float amount);
 
-	void reduceMoney(Player player, double amount);
+	boolean reduceMoney(Player player, float amount);
 
 
 	/**
-	 * 减少一个玩家的货币数量
+	 * 减少一个玩家的货币数量. 会触发 {@link MoneyDecreaseEvent} 随后触发 {@link MoneyChangeEvent}
 	 *
 	 * @param player 玩家名
 	 * @param amount 数量.
 	 * @param type   货币类型. true: 货币2, false: 货币1
 	 *
-	 * @see Money#reduceMoney(String, double)
-	 * @see Money#reduceMoney(Player, double)
+	 * @since Money 2.0.0
 	 */
-	@Deprecated
-	void reduceMoney(Player player, double amount, boolean type);
+	boolean reduceMoney(String player, float amount, CurrencyType type);
+
+	boolean reduceMoney(Player player, float amount, CurrencyType type);
 
 	@Deprecated
-	void reduceMoney(String player, double amount, boolean type);
+	boolean reduceMoney(Player player, float amount, boolean type);
 
-	void reduceMoney(Player player, double amount, CurrencyType type);
-
-	void reduceMoney(String player, double amount, CurrencyType type);
+	@Deprecated
+	boolean reduceMoney(String player, float amount, boolean type);
 
 
 	/**
-	 * 设置全服玩家(数据库中所有已记录的玩家)的货币数量
+	 * 设置全服玩家(数据库中所有已记录的玩家)的货币数量. 会触发 {@link MoneyChangeEvent}
 	 *
+	 * @param amount 数量
+	 *
+	 * @return 成功操作的玩家数
+	 *
+	 * @since Money 2.0.0
+	 */
+	int setAllMoney(float amount);
+
+	int setAllMoney(float amount, CurrencyType type);
+
+
+	/**
+	 * 设置全服玩家(数据库中所有已记录的玩家)的货币数量. 会触发 {@link MoneyIncreaseEvent} {@link MoneyChangeEvent}
+	 *
+	 * @param amount 数量
+	 *
+	 * @return 成功操作的玩家数
+	 *
+	 * @since Money 2.0.0
+	 */
+	int addAllMoney(float amount);
+
+	int addAllMoney(float amount, CurrencyType type);
+
+
+	/**
+	 * 设置全服玩家(数据库中所有已记录的玩家)的货币数量. 会触发 {@link MoneyIncreaseEvent} {@link MoneyChangeEvent}
+	 *
+	 * @param amount 数量
+	 *
+	 * @return 成功操作的玩家数
+	 *
+	 * @since Money 2.0.0
+	 */
+	int reduceAllMoney(float amount);
+
+	int reduceAllMoney(float amount, CurrencyType type);
+
+
+	/**
+	 * 增加一个玩家的银行储蓄. 会触发 {@link BankIncreaseEvent} 随后触发 {@link BankChangeEvent}
+	 *
+	 * @param player 玩家名
 	 * @param amount 数量
 	 *
 	 * @since Money 2.0.0
 	 */
-	void setAllMoney(double amount);
+	boolean addBank(String player, float amount);
 
-	void setAllMoney(double amount, CurrencyType type);
+	boolean addBank(Player player, float amount);
+
+
+	/**
+	 * 减少一个玩家的银行储蓄. 会触发 {@link BankDecreaseEvent} 随后触发 {@link BankChangeEvent}
+	 *
+	 * @param player 玩家名
+	 * @param amount 数量
+	 *
+	 * @since Money 2.0.0
+	 */
+	boolean reduceBank(String player, float amount);
+
+	boolean reduceBank(Player player, float amount);
+
+
+	/**
+	 * 设置全服玩家(数据库中所有已记录的玩家)的银行余额. 会触发 {@link BankChangeEvent}
+	 *
+	 * @param amount 余额
+	 *
+	 * @return 成功操作的玩家数
+	 *
+	 * @since Money 2.0.0
+	 */
+	int setAllBank(float amount);
+
+	/**
+	 * 获取数据库中记录的所有玩家名字
+	 *
+	 * @return 所有玩家名(可能含有无效名), 可用于遍历等操作
+	 *
+	 * @since Money 2.0.0
+	 */
+	Set<String> getPlayers();
+
+	/**
+	 * 获取数据库中记录的所有玩家名字并过滤无效名字
+	 *
+	 * @return 所有玩家名, 可用于遍历等操作
+	 *
+	 * @since Money 2.0.0
+	 */
+	Set<String> getPlayersFiltered();
 }
 

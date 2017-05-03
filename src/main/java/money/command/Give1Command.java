@@ -17,6 +17,7 @@ import java.util.Objects;
 public class Give1Command extends MoneyCommand {
 	public Give1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.give1");
 	}
 
 	@Override
@@ -32,28 +33,45 @@ public class Give1Command extends MoneyCommand {
 		}
 
 		if (args.length < 2) {
-			sender.sendMessage(this.getPlugin().translateMessage("give-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("give-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to = Double.parseDouble(args[1]);
+		float to = Float.parseFloat(args[1]);
 
 		Player p = Utils.getPlayer(args[0]);
 		String name;
 		if (p == null) {
 			name = args[0];
 		} else {
-			p.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), new Long(args[1]), getPlugin().getMoneyUnit1()));
 			name = p.getName();
 		}
 
 		if (Objects.equals(name, "")) {
-			sender.sendMessage(getPlugin().translateMessage("invalid-name", this.getName()));
+			sender.sendMessage(getPlugin().translateMessage("invalid-name", "cmd", this.getName()));
 			return true;
 		}
-		getPlugin().addMoney(name, to);
 
-		sender.sendMessage(getPlugin().translateMessage("give-success", new Long(args[1]), getPlugin().getMoneyUnit1(), name));
+		if (!getPlugin().addMoney(name, to)) {
+			sender.sendMessage(getPlugin().translateMessage("give-failed",
+					"amount", Float.parseFloat(args[1]),
+					"type", getPlugin().getCurrency1(),
+					"name", name));
+
+			return true;
+		}
+
+		if (p != null) {
+			p.sendMessage(getPlugin().translateMessage("give-done",
+					"name", sender.getName(),
+					"amount", Long.parseLong(args[1]),
+					"type", getPlugin().getCurrency1()));
+		}
+
+		sender.sendMessage(getPlugin().translateMessage("give-success",
+				"amount", Float.parseFloat(args[1]),
+				"type", getPlugin().getCurrency1(),
+				"name", name));
 		return true;
 	}
 }

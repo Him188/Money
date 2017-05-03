@@ -13,9 +13,11 @@ import java.util.Map;
  * @author Him188 @ Money Project
  * @since Money 2.0.0
  */
-public class WalletInfo1Command extends MoneyCommand{
-	public WalletInfo1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class WalletInfo1Command extends MoneyCommand {
+	public WalletInfo1Command(String name, Money owner, String[] aliases,
+	                          Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.walletinfo1");
 	}
 
 	@Override
@@ -29,7 +31,9 @@ public class WalletInfo1Command extends MoneyCommand{
 			return true;
 		}
 
-		sender.sendMessage(this.getPlugin().translateMessage("your-money-1", Math.round(getPlugin().getMoney((Player) sender, CurrencyType.FIRST)), getPlugin().getMoneyUnit1()));
+		sender.sendMessage(this.getPlugin().translateMessage("your-money-1",
+				"amount", getPlugin().getMoney((Player) sender, CurrencyType.FIRST),
+				"type", getPlugin().getCurrency1()));
 		return true;
 	}
 }

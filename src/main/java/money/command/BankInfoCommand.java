@@ -12,9 +12,11 @@ import java.util.Map;
  * @author Him188 @ Money Project
  * @since Money 2.0.0
  */
-public class BankInfoCommand extends MoneyCommand{
-	public BankInfoCommand(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class BankInfoCommand extends MoneyCommand {
+	public BankInfoCommand(String name, Money owner, String[] aliases,
+	                       Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.bankinfo");
 	}
 
 	@Override
@@ -27,8 +29,7 @@ public class BankInfoCommand extends MoneyCommand{
 			sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
 			return true;
 		}
-
-		sender.sendMessage(this.getPlugin().translateMessage("your-bank", Math.round(getPlugin().getBank((Player) sender))));
+		sender.sendMessage(this.getPlugin().translateMessage("your-bank", "amount", getPlugin().getBank((Player) sender)));
 		return true;
 	}
 }

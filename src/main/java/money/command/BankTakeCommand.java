@@ -12,9 +12,11 @@ import java.util.Map;
  * @author Him188 @ Money Project
  * @since Money 2.0.0
  */
-public class BankTakeCommand extends MoneyCommand{
-	public BankTakeCommand(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class BankTakeCommand extends MoneyCommand {
+	public BankTakeCommand(String name, Money owner, String[] aliases,
+	                       Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.banktake");
 	}
 
 	@Override
@@ -29,21 +31,37 @@ public class BankTakeCommand extends MoneyCommand{
 		}
 
 		if (args.length < 1) {
-			sender.sendMessage(getPlugin().translateMessage("bank-take-format-error", this.getName()));
+			sender.sendMessage(getPlugin().translateMessage("bank-take-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to = Double.parseDouble(args[0]);
-		Double money = getPlugin().getBank((Player) sender);
+		float to = Float.parseFloat(args[0]);
+		Float money = getPlugin().getBank((Player) sender);
 		if (money < to) {
 			getPlugin().translateMessage("bank-take-value-error");
 			return true;
 		}
 
-		getPlugin().setBank((Player) sender, money - to);
-		getPlugin().addMoney((Player) sender, to);
+		if (!getPlugin().reduceBank((Player) sender, to)) {
+			sender.sendMessage(getPlugin().translateMessage("bank-take-failed",
+					"amount", (Float.parseFloat(args[0])),
+					"type", getPlugin().getCurrency1())
+			);
+			return true;
+		}
 
-		sender.sendMessage(getPlugin().translateMessage("bank-take-success", Math.round(Double.parseDouble(args[0])), getPlugin().getMoneyUnit1()));
+		if (!getPlugin().addMoney((Player) sender, to)) {
+			sender.sendMessage(getPlugin().translateMessage("bank-take-failed",
+					"amount", (Float.parseFloat(args[0])),
+					"type", getPlugin().getCurrency1())
+			);
+			getPlugin().reduceBank((Player) sender, to);
+			return true;
+		}
+
+		sender.sendMessage(getPlugin().translateMessage("bank-take-success",
+				"amount", (Float.parseFloat(args[0])),
+				"type", getPlugin().getCurrency1()));
 		return true;
 
 

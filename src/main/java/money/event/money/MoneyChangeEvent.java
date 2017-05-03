@@ -1,8 +1,7 @@
-package money.event;
+package money.event.money;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import money.CurrencyType;
 import money.Money;
@@ -11,10 +10,9 @@ import money.Money;
  * 当玩家的货币数量被改动时触发本事件
  *
  * @author Him188 @ Money Project
- * @see Money#setMoney(Player, double, CurrencyType)
  * @since Money 1.0.0
  */
-public class MoneyChangeEvent extends Event implements Cancellable {
+public class MoneyChangeEvent extends MoneyEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 
 	public static HandlerList getHandlers() {
@@ -23,26 +21,26 @@ public class MoneyChangeEvent extends Event implements Cancellable {
 
 
 	private final String player;        //被修改经济数据的玩家
-	private double target;              //最终的货币数量
+	private float target;              //最终的货币数量
 	private final CurrencyType type;    //货币种类
 
 	@Deprecated
-	public MoneyChangeEvent(String player, double target, boolean type) {
+	public MoneyChangeEvent(String player, float target, boolean type) {
 		this(player, target, CurrencyType.fromBoolean(type));
 	}
 
 	@Deprecated
-	public MoneyChangeEvent(Player player, double target, boolean type) {
+	public MoneyChangeEvent(Player player, float target, boolean type) {
 		this(player.getName(), target, CurrencyType.fromBoolean(type));
 	}
 
-	public MoneyChangeEvent(String player, double target, CurrencyType type) {
+	public MoneyChangeEvent(String player, float target, CurrencyType type) {
 		this.player = player;
 		this.target = target;
 		this.type = type;
 	}
 
-	public MoneyChangeEvent(Player player, double target, CurrencyType type) {
+	public MoneyChangeEvent(Player player, float target, CurrencyType type) {
 		this(player.getName(), target, type);
 	}
 
@@ -54,11 +52,11 @@ public class MoneyChangeEvent extends Event implements Cancellable {
 	 * @deprecated 请直接使用 {@link Money#getMoney(String, CurrencyType)}
 	 */
 	@Deprecated
-	public double getOriginal() {
+	public float getOriginal() {
 		return Money.getInstance().getMoney(this.player, this.type);
 	}
 
-	public double getTarget() {
+	public float getTarget() {
 		return this.target;
 	}
 
@@ -66,6 +64,7 @@ public class MoneyChangeEvent extends Event implements Cancellable {
 	 * 获取货币类型
 	 *
 	 * @return false: 货币 1, true: 货币 2
+	 *
 	 * @deprecated 请使用 {@link #getCurrencyType()}, 本方法仅为兼容旧 API 而保留, 将来版本可能删除!
 	 */
 	@Deprecated
@@ -82,7 +81,7 @@ public class MoneyChangeEvent extends Event implements Cancellable {
 		return this.type;
 	}
 
-	public void setTarget(double target) {
+	public void setTarget(float target) {
 		this.target = target;
 	}
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 public class List1Command extends MoneyCommand {
 	public List1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.list1");
 	}
 
 	@Override
@@ -34,9 +35,10 @@ public class List1Command extends MoneyCommand {
 		}
 
 		Server.getInstance().getScheduler().scheduleAsyncTask(getPlugin(), new AsyncTask() {
+			@SuppressWarnings("Duplicates")
 			@Override
 			public void onRun() {
-				LinkedHashMap<String, String> linkedHashMap = Utils.sortMap(getPlugin().data.getData(), "money1");
+				LinkedHashMap<String, String> linkedHashMap = Utils.sortMap(getPlugin().getDataMap(), "money1");
 
 				int pages = linkedHashMap.size() / 6;
 
@@ -56,12 +58,17 @@ public class List1Command extends MoneyCommand {
 				}
 
 				int i;
-				StringBuilder msg = new StringBuilder(getPlugin().translateMessage("list", getPlugin().getMoneyUnit1(), page, (pages + 1)) + "\n");
+				StringBuilder msg = new StringBuilder(getPlugin().translateMessage("list",
+						"type", getPlugin().getCurrency1(),
+						"page", page,
+						"all", (pages + 1)
+				) + "\n");
 				for (i = 6 * (page - 1); i < 6 * page; i++) {
 					String value = Utils.getKeyByNumber(i, linkedHashMap);
 					String key = Utils.getValueByNumber(i, linkedHashMap);
 					if (key != null && value != null && !key.equals("") && !value.equals("")) {
-						msg.append(TextFormat.YELLOW).append("No.").append(i + 1).append(" ").append(TextFormat.GOLD).append(value).append(TextFormat.AQUA).append("  ").append(key).append(" \n");
+						msg.append(TextFormat.YELLOW).append("No.").append(i + 1).append(" ").append(TextFormat.GOLD)
+								.append(value).append(TextFormat.AQUA).append("  ").append(key).append(" \n");
 					}
 				}
 

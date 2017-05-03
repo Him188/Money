@@ -18,6 +18,7 @@ import java.util.Objects;
 public class Set2Command extends MoneyCommand {
 	public Set2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.set2");
 	}
 
 	@Override
@@ -27,34 +28,44 @@ public class Set2Command extends MoneyCommand {
 			return true;
 		}
 
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
-			return true;
-		}
-
 		if (args.length < 2) {
-			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to = Double.parseDouble(args[1]);
+		float to = Float.parseFloat(args[1]);
 
 		Player p = Utils.getPlayer(args[0]);
 		String name;
 		if (p == null) {
 			name = args[0];
 		} else {
-			p.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), new Long(args[1]), getPlugin().getMoneyUnit2()));
 			name = p.getName();
 		}
 
 		if (Objects.equals(name, "")) {
-			sender.sendMessage(getPlugin().translateMessage("invalid-name", this.getName()));
+			sender.sendMessage(getPlugin().translateMessage("invalid-name", "cmd", this.getName()));
 			return true;
 		}
-		getPlugin().setMoney(name, to, CurrencyType.SECOND);
+		if (!getPlugin().setMoney(name, to, CurrencyType.SECOND)) {
+			sender.sendMessage(getPlugin().translateMessage("set-failed",
+					"amount", Float.parseFloat(args[1]),
+					"type", getPlugin().getCurrency2(),
+					"name", name));
+			return true;
+		}
 
-		sender.sendMessage(getPlugin().translateMessage("set-success", new Long(args[1]), getPlugin().getMoneyUnit2(), name));
+		if (p!=null) {
+			p.sendMessage(getPlugin().translateMessage("set-done",
+					"name", sender.getName(),
+					"amount", Float.parseFloat(args[1]),
+					"type", getPlugin().getCurrency2()));
+		}
+
+		sender.sendMessage(getPlugin().translateMessage("set-success",
+				"amount", Float.parseFloat(args[1]),
+				"type", getPlugin().getCurrency2(),
+				"name", name));
 		return true;
 	}
 }

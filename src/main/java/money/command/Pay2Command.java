@@ -17,6 +17,7 @@ import java.util.Objects;
 public class Pay2Command extends MoneyCommand {
 	public Pay2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.pay2");
 	}
 
 	@Override
@@ -31,12 +32,12 @@ public class Pay2Command extends MoneyCommand {
 		}
 
 		if (args.length < 2) {
-			sender.sendMessage(this.getPlugin().translateMessage("pay-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("pay-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to = Double.parseDouble(args[1]);
-		double money = getPlugin().getMoney((Player) sender);
+		float to = Float.parseFloat(args[1]);
+		float money = getPlugin().getMoney((Player) sender);
 		if (money < to) {
 			sender.sendMessage(this.getPlugin().translateMessage("pay-value-error"));
 			return true;
@@ -45,8 +46,10 @@ public class Pay2Command extends MoneyCommand {
 			sender.sendMessage(this.getPlugin().translateMessage("pay-value-error-2"));
 			return true;
 		}
-		if (money - to < Double.parseDouble(getPlugin().getConfig().get("pay-2-limit").toString())) {
-			sender.sendMessage(this.getPlugin().translateMessage("pay-can-not-less-than-initiation", Math.round(Double.parseDouble(getPlugin().getConfig().get("pay-2-limit").toString())), getPlugin().getMoneyUnit2()));
+		if (money - to < Float.parseFloat(getPlugin().getConfig().get("pay-2-limit").toString())) {
+			sender.sendMessage(this.getPlugin().translateMessage("pay-can-not-less-than-initiation",
+					"limit", (Float.parseFloat(getPlugin().getConfig().get("pay-2-limit").toString())),
+					"type", getPlugin().getCurrency2()));
 			return true;
 		}
 
@@ -55,20 +58,44 @@ public class Pay2Command extends MoneyCommand {
 		if (p == null) {
 			name = args[0];
 		} else {
-			p.sendMessage(this.getPlugin().translateMessage("pay-for-you", Math.round(Double.parseDouble(args[1])), getPlugin().getMonetaryUnit2()));
+			p.sendMessage(this.getPlugin().translateMessage("pay-for-you",
+					"name", (Float.parseFloat(args[1])),
+					"type", getPlugin().getCurrency2()));
 			name = p.getName();
 		}
 
 		if (Objects.equals(name, "")) {
-			sender.sendMessage(this.getPlugin().translateMessage("invalid-name", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("invalid-name", "cmd", this.getName()));
 			return true;
 		}
 
+		if (!getPlugin().reduceMoney((Player) sender, to)) {
+			sender.sendMessage(this.getPlugin().translateMessage("pay-failed",
+					"amount",(Float.parseFloat(args[1])),
+					"type", getPlugin().getCurrency2(),
+					"name", name));
+			return true;
+		}
 
-		getPlugin().reduceMoney((Player) sender, to);
-		getPlugin().addMoney((Player) sender, to);
+		if (!getPlugin().addMoney((Player) sender, to)) {
+			sender.sendMessage(this.getPlugin().translateMessage("pay-failed",
+					"amount",(Float.parseFloat(args[1])),
+					"type", getPlugin().getCurrency2(),
+					"name", name));
+			getPlugin().addMoney((Player) sender, to);
+			return true;
+		}
 
-		sender.sendMessage(this.getPlugin().translateMessage("pay-success", Math.round(Double.parseDouble(args[1])), getPlugin().getMoneyUnit2(), name));
+		if (p != null) {
+			p.sendMessage(this.getPlugin().translateMessage("pay-for-you",
+					"name", (Float.parseFloat(args[1])),
+					"type", getPlugin().getCurrency2()));
+		}
+
+		sender.sendMessage(this.getPlugin().translateMessage("pay-success",
+						"amount",(Float.parseFloat(args[1])),
+						"type", getPlugin().getCurrency2(),
+						"name", name));
 		return true;
 	}
 }

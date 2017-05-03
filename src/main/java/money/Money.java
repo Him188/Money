@@ -5,18 +5,23 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandExecutor;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.server.ServerCommandEvent;
 import cn.nukkit.plugin.MethodEventExecutor;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
+
 import money.command.*;
-import money.event.BankChangeEvent;
-import money.event.MoneyChangeEvent;
+import money.event.bank.BankChangeEvent;
+import money.event.bank.BankDecreaseEvent;
+import money.event.bank.BankIncreaseEvent;
+import money.event.money.MoneyChangeEvent;
+import money.event.money.MoneyDecreaseEvent;
+import money.event.money.MoneyIncreaseEvent;
+
+import money.testks.BankInterestTask;
 import net.mamoe.moedb.db.ConfigDatabase;
 import net.mamoe.moedb.db.KeyValueDatabase;
 
@@ -33,12 +38,12 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	private static Money instance = null;
 
 	private Map<String, String> language = new HashMap<>();
-	public KeyValueDatabase db = null;
-	private Map<String, String> commands = new HashMap<>();
 
-	protected long bank_time = 0L;
-	protected long last_time = 0L;
-	protected double bank_interest = 0d;
+	/**
+	 * 数据库, 使用自 {@code MoeDB} 前置插件
+	 */
+	KeyValueDatabase db = null; // TODO: 2017/5/3  数据库选择
+	private Map<String, String> commands = new HashMap<>();
 
 	private final static String nowCommandVersion = "4";
 	private final static String nowLanguageVersion = "5";
@@ -86,16 +91,23 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return instance;
 	}
 
+	{
+		instance = this;
+	}
+
 	@Override
 	public void onLoad() {
-		getDataFolder().mkdir();
+		if (!getDataFolder().mkdir()) {
+			this.getLogger().warning("无法创建配置目录 (" + getDataFolder() + ")");
+			this.getLogger().warning("Could not create data directory (" + getDataFolder() + ")");
+		}
 		reloadConfig();
 	}
 
 	private Integer errorTimes = 0;
 
 	//由事件触发
-	public void chooseLanguage(ServerCommandEvent event) {
+	private void chooseLanguage(ServerCommandEvent event) {
 		if (getConfig().getAll().isEmpty()) {
 			event.setCancelled();
 
@@ -103,27 +115,27 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 			if (errorTimes == 3) {
 				language = "chs";
-				this.getLogger().info(TextFormat.GREEN + "输入3次错误, 将使用默认设置");
-				this.getLogger().info(TextFormat.YELLOW + "已使用 [简体中文] 作为默认语言.");
+				this.getLogger().info(TextFormat.GREEN + "输入3次无效. 将使用默认设置");
+				this.getLogger().notice("已使用 [简体中文] 作为默认语言.");
 			} else {
 				switch (event.getCommand()) {
 					case "":
 						return;
 					case "chs":
-						this.getLogger().info(TextFormat.YELLOW + "已使用 [简体中文] 作为默认语言.");
+						this.getLogger().notice("已使用 [简体中文] 作为默认语言.");
 						language = "chs";
 						break;
 					case "eng":
-						this.getLogger().info(TextFormat.YELLOW + "Have chosen [English] as the default language.");
+						this.getLogger().notice("Have chosen [English] as the default language.");
 						language = "eng";
 						break;
 					case "cht":
-						this.getLogger().info(TextFormat.YELLOW + "已使用 [繁體中文] 作為默認語言.");
+						this.getLogger().notice("已使用 [繁體中文] 作為默認語言.");
 						language = "cht";
 						break;
 					default:
-						this.getLogger().info(TextFormat.YELLOW + "请输入 'chs' 或 'cht' 或 'eng'");
-						this.getLogger().info(TextFormat.YELLOW + "Please enter 'chs', 'cht' or 'eng'");
+						this.getLogger().notice("请输入 'chs' 或 'cht' 或 'eng'");
+						this.getLogger().notice("Please enter 'chs', 'cht' or 'eng'");
 						errorTimes++;
 						return;
 				}
@@ -134,7 +146,6 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			saveResource("Commands_" + language + ".yml", "Commands.yml", true);
 
 			init();
-			return;
 		}
 	}
 
@@ -142,13 +153,15 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	public void onEnable() {
 		if (getConfig().getAll().isEmpty()) {
 			try {
-				getServer().getPluginManager().registerEvent(ServerCommandEvent.class, this, EventPriority.HIGHEST, new MethodEventExecutor(this.getClass().getMethod("chooseLanguage")), this);
+				getServer().getPluginManager().registerEvent(ServerCommandEvent.class, this, EventPriority.HIGHEST,
+						new MethodEventExecutor(this.getClass().getMethod("chooseLanguage")), this);
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
 
-			this.getLogger().info(TextFormat.YELLOW + "欢迎使用本插件, 请选择语言: (输入 3 次错误自动选择中文)");
-			this.getLogger().info(TextFormat.YELLOW + "Hello. Please choose a language: (It will choose chs automatically when inputting error 3 times)");
+			this.getLogger().notice("欢迎使用本插件, 请选择语言: (输入 3 次错误自动选择中文)");
+			this.getLogger().notice(
+					"Hello. Please choose a language: (It will choose chs automatically when inputting error 3 times)");
 			this.getLogger().info(TextFormat.AQUA + "chs: 简体中文");
 			this.getLogger().info(TextFormat.AQUA + "cht: 繁體中文");
 			this.getLogger().info(TextFormat.AQUA + "eng: English\n");
@@ -160,116 +173,123 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	}
 
-	public void init() {
-
+	private void init() {
 		try {
-			initDatabase();
 			initConfig();
+			initDatabase();
 			initLanguage();
 			initCommands();
 
-			instance = this;
 
 			/* Register Commands */
 
-			/* Command Parameters */
-			final Map<String, Map<String, CommandParameter[]>> parameters = new HashMap<String, Map<String, CommandParameter[]>>() {
-				{
-					put("wallet-info-1", new HashMap<String, CommandParameter[]>() {{
-						put("wallet-info-1", new CommandParameter[]{
+			final Map<String, Map<String, CommandParameter[]>> parameters =
+					new HashMap<String, Map<String, CommandParameter[]>>() {
+						{
+							put("wallet-info-1", new HashMap<String, CommandParameter[]>() {{
+								put("wallet-info-1", new CommandParameter[]{
 
-						});
-					}});
-					put("wallet-info-2", new HashMap<String, CommandParameter[]>() {{
-						put("wallet-info-2", new CommandParameter[]{
+								});
+							}});
+							put("wallet-info-2", new HashMap<String, CommandParameter[]>() {{
+								put("wallet-info-2", new CommandParameter[]{
 
-						});
-					}});
-					put("bank-info", new HashMap<String, CommandParameter[]>() {{
-						put("bank-info", new CommandParameter[]{
+								});
+							}});
+							put("bank-info", new HashMap<String, CommandParameter[]>() {{
+								put("bank-info", new CommandParameter[]{
 
-						});
-					}});
-					put("bank-save", new HashMap<String, CommandParameter[]>() {{
-						put("bank-save", new CommandParameter[]{
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("bank-take", new HashMap<String, CommandParameter[]>() {{
-						put("bank-take", new CommandParameter[]{
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("pay-1", new HashMap<String, CommandParameter[]>() {{
-						put("bank-1", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("pay-2", new HashMap<String, CommandParameter[]>() {{
-						put("bank-2", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("give-1", new HashMap<String, CommandParameter[]>() {{
-						put("give-1", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("give-2", new HashMap<String, CommandParameter[]>() {{
-						put("give-2", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("set-1", new HashMap<String, CommandParameter[]>() {{
-						put("set-1", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("set-2", new HashMap<String, CommandParameter[]>() {{
-						put("set-2", new CommandParameter[]{
-								new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("super-set-1", new HashMap<String, CommandParameter[]>() {{
-						put("super-set-1", new CommandParameter[]{
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("super-set-2", new HashMap<String, CommandParameter[]>() {{
-						put("super-set-2", new CommandParameter[]{
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("list-1", new HashMap<String, CommandParameter[]>() {{
-						put("list-1", new CommandParameter[]{
-								new CommandParameter("page", CommandParameter.ARG_TYPE_INT, true)
-						});
-					}});
-					put("list-2", new HashMap<String, CommandParameter[]>() {{
-						put("list-2", new CommandParameter[]{
-								new CommandParameter("page", CommandParameter.ARG_TYPE_INT, true)
-						});
-					}});
-					put("give-online-1", new HashMap<String, CommandParameter[]>() {{
-						put("give-online-1", new CommandParameter[]{
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-					put("give-online-2", new HashMap<String, CommandParameter[]>() {{
-						put("give-online-2", new CommandParameter[]{
-								new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
-						});
-					}});
-				}
-			};
+								});
+							}});
+							put("bank-save", new HashMap<String, CommandParameter[]>() {{
+								put("bank-save", new CommandParameter[]{
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("bank-take", new HashMap<String, CommandParameter[]>() {{
+								put("bank-take", new CommandParameter[]{
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("pay-1", new HashMap<String, CommandParameter[]>() {{
+								put("bank-1", new CommandParameter[]{
+										new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("pay-2", new HashMap<String, CommandParameter[]>() {{
+								put("bank-2", new CommandParameter[]{
+										new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("give-1", new HashMap<String, CommandParameter[]>() {{
+								put("give-1", new CommandParameter[]{
+										new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("give-2", new HashMap<String, CommandParameter[]>() {{
+								put("give-2", new CommandParameter[]{
+										new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("set-1", new HashMap<String, CommandParameter[]>() {{
+								put("set-1", new CommandParameter[]{
+										new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("set-2", new HashMap<String, CommandParameter[]>() {{
+								put("set-2", new CommandParameter[]{
+										new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("super-set-1", new HashMap<String, CommandParameter[]>() {{
+								put("super-set-1", new CommandParameter[]{
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("super-set-2", new HashMap<String, CommandParameter[]>() {{
+								put("super-set-2", new CommandParameter[]{
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("list-1", new HashMap<String, CommandParameter[]>() {{
+								put("list-1", new CommandParameter[]{
+										new CommandParameter("page", CommandParameter.ARG_TYPE_INT, true)
+								});
+							}});
+							put("list-2", new HashMap<String, CommandParameter[]>() {{
+								put("list-2", new CommandParameter[]{
+										new CommandParameter("page", CommandParameter.ARG_TYPE_INT, true)
+								});
+							}});
+							put("give-online-1", new HashMap<String, CommandParameter[]>() {{
+								put("give-online-1", new CommandParameter[]{
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+							put("give-online-2", new HashMap<String, CommandParameter[]>() {{
+								put("give-online-2", new CommandParameter[]{
+										new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+								});
+							}});
+						}
+					};
 
+			/* Register commands */
 			commands.forEach((key, value) -> {
+				if (value == null || value.equals("") || value.equals("version") || value.equals("type")) {
+					return;
+				}
+
+				if (!isCurrency2Enabled() && key.contains("2")) { //currency 2
+					return;
+				}
+
 				PluginCommand cmd;
 				cmd = new PluginCommand<>(value, this);
 				cmd.setExecutor(matchExecutor(key));
@@ -277,8 +297,17 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 				Server.getInstance().getCommandMap().register(key, cmd);
 			});
 
-			Server.getInstance().getScheduler().scheduleDelayedTask(this, new BankInterestTask(this), 1200);
-			Server.getInstance().getScheduler().scheduleDelayedTask(this, this::saveConfig, 1200);
+
+			Server.getInstance().getScheduler().scheduleDelayedTask(this, new BankInterestTask(this,
+					Long.parseLong(getConfig().getAll().getOrDefault("bank-interest-time", 0).toString()) * 1000,
+					1 + Float.parseFloat(getConfig().getAll().getOrDefault("bank-interest-value", 0).toString()),
+					Long.parseLong(db.get("last-time", "0").toString()),
+					getConfig().getBoolean("bank-interest-real", true)), 1200);
+
+			if (getConfig().getInt("database-save-tick", 2400) != 0) {
+				Server.getInstance().getScheduler()
+						.scheduleDelayedTask(this, this::saveConfig, getConfig().getInt("database-save-tick", 2400));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -286,20 +315,29 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		Server.getInstance().getPluginManager().registerEvents(this, this); // TODO: 2017/5/1 Event 分开
 	}
 
-	@Override
-	public void saveConfig() {
-
-	}
-
 	private void initLanguage() {
-		Map<String, Object> c = new Config(getDataFolder() + "/Language.yml", Config.YAML).getAll();
-		language = new HashMap<>();
-		for (Map.Entry<String, Object> entry : c.entrySet()) {
-			language.put(entry.getKey(), entry.getValue().toString());
+		Map<String, Object> c;
+
+		if (new File(getDataFolder() + "/Language.yml").exists()) {
+			c = new Config(getDataFolder() + "/Language.yml", Config.YAML).getAll();
+			if (!new File(getDataFolder() + "/Language.yml").renameTo(new File(getDataFolder() + "/Language.yml.bak"))) {
+				getLogger().notice("语言文件转换成功, 但重命名旧文件 \"Language.yml\" 为 \"Language.yml.bak\" 失败, 请手动重命名将其作为一个备份或删除");
+				getLogger().notice("Language file converting success! But renaming old file \"Language.yml\" to" +
+						" \"Language.yml.bak\" failed. Please rename it manually to make it as a backup or delete it.");
+			}
+		} else {
+			c = new Config(getDataFolder() + "/Language.properties", Config.PROPERTIES).getAll();
 		}
 
+		language = new HashMap<String, String>() {
+			{
+				c.forEach((key, value) -> put(key, value.toString()));
+			}
+		};
+
 		if (!Objects.equals(language.get("version"), nowLanguageVersion)) {
-			saveResource("Language_" + language.getOrDefault("type", "chs") + ".yml", "Language.yml", true);
+			saveResource("Language_" + language.getOrDefault("type", "chs") + ".properties", "Language.properties",
+					true);
 			initLanguage(language);
 		}
 	}
@@ -308,12 +346,11 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		initLanguage();
 		old.forEach((key, value) -> language.put(key, value));
 
-		Config con = new Config(getDataFolder() + "/Language.yml", Config.YAML);
-		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-		map.putAll(language);
-		con.setAll(map);
+		Config con = new Config(getDataFolder() + "/Language.properties", Config.PROPERTIES);
+		con.setAll(new LinkedHashMap<>(language));
 		con.save();
 	}
+
 
 	private void initCommands() {
 		Map<String, Object> c = new Config(getDataFolder() + "/Commands.yml", Config.YAML).getAll();
@@ -334,65 +371,69 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		old.forEach((key, value) -> commands.put(key, value));
 
 		Config con = new Config(getDataFolder() + "/Commands.yml", Config.YAML);
-		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-		map.putAll(commands);
-		con.setAll(map);
+		con.setAll(new LinkedHashMap<>(commands));
 		con.save();
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onJoin(PlayerJoinEvent event) {
-		db.hashSet(event.getPlayer().getName(), "money1", getConfig().getDouble("initial-money-1", 0));
-		db.hashSet(event.getPlayer().getName(), "money2", getConfig().getDouble("initial-money-2", 0));
-		db.hashSet(event.getPlayer().getName(), "bank", getConfig().getDouble("initial-bank-money", 0));
-	}
-
-	String getLanguage() {
-		try {
-			return (String) getConfig().get("language");
-		} catch (Exception ignore) {
-
-		}
-
-		return null;
-	}
 
 	private void initConfig() {
-		saveResource("Config_chs.yml", "Config_default.yml", true);
+		reloadConfig();
+		Config config = new Config(Config.YAML);
+		config.load(getResource("Config_chs.yml"));
 
-		Map<String, Object> normal = new Config(getDataFolder() + "/Config_default.yml", Config.YAML).getAll();
+		Map<String, Object> normal = config.getAll();
 		final boolean[] formatted = {false};
 		normal.forEach((key, value) -> {
-			getConfig().getAll().putIfAbsent(key, value);
-
-			formatted[0] = true;
+			if (getConfig().getAll().putIfAbsent(key, value) == null) {
+				formatted[0] = true;
+			}
 		});
 
 		if (formatted[0]) {
-			Config con = new Config(getDataFolder() + "/Config.yml", Config.YAML);
-			con.setAll((LinkedHashMap<String, Object>) getConfig().getAll());
-			con.save();
+			saveConfig();
 		}
-
-		new File(getDataFolder() + "/Config_default.yml").delete();
-
-		Map<String, Object> val = db.hashGetAll("__BANK__");
-
-		last_time = new Date().getTime();
-
-		db.hashSet("__BANK__", "time", Long.toString(last_time));
-
-		bank_time = Long.parseLong(getConfig().getAll().getOrDefault("bank-interest-time", 0).toString()) * 1000;
-		bank_interest = 1 + Double.parseDouble(getConfig().getAll().getOrDefault("bank-interest-value", 0).toString());
 	}
 
-	private void initDatabase() {
-		if (new File(getDataFolder() + "/Data.yml").exists()) {
-			// TODO: 2017/5/2 convert to new db
 
+	private void initDatabase() {
+		db = new ConfigDatabase(new Config(getDataFolder() + "/db.dat", Config.YAML),
+				getConfig().getInt("database-save-tick", 2400) == 0);
+
+		if (!new File(getDataFolder() + "/db.dat").exists() && new File(getDataFolder() + "/Data.yml").exists()) {
+			if (!convertDatabase(getDataFolder() + "/Data.yml")) {
+				getLogger().critical("数据转换失败, 但插件仍将继续加载, 使用空的新数据库. 旧的文件保留, 你可以修复其错误后重新");
+				getLogger().critical("Data file converting failed. But the plugin will still enable while using" +
+						" new-empty-database. Old data file will not be deleted, you can fix error(s) which is printed " +
+						"just now and restart the server, the plugin will retry converting.");
+			} else {
+				if (new File(getDataFolder() + "/Data.yml").renameTo(new File(getDataFolder() + "/Data.yml.bak"))) {
+					getLogger().notice("数据转换成功! 旧文件已经被重命名为 \"Data.yml.bak\", 你可以删除该文件, 或是将其作为一个备份.");
+					getLogger().notice("Data file converting success! The old data file is renamed as " +
+							"\"Data.yml.bak\", you can delete that file, or make it as a backup.");
+				} else {
+					getLogger().notice("数据转换成功, 但重命名旧文件 \"Data.yml\" 为 \"Data.yml.bak\" 失败, 请手动重命名将其作为一个备份或删除");
+					getLogger()
+							.notice("Data file converting success! But renaming old file \"Data.yml\" to \"Data.yml.bak\" failed. " +
+									"Please rename it manually to make it as a backup or delete it.");
+				}
+
+			}
+		}
+	}
+
+
+	private boolean convertDatabase(String oldFile) {
+		OldDatabase old = new OldDatabase(this);
+		if (!old.loadFile(oldFile)) {
+			getLogger().critical("检测到旧数据文件 (Data.yml) 存在, 但无法转换为新数据库(错误原因: 无法读取该文件). 请检查是否有权限且保证未对其进行修改!");
+			getLogger().critical(
+					"It seems that old data file (Data.yml) is exists, but the plugin can't convert it to new format(Reason: can't read file). " +
+							"Please check the filesystem permission and be sure you did't modify it!");
+			return false;
 		}
 
-		db = new ConfigDatabase(new Config(getDataFolder() + "/db.dat", Config.YAML));
+		old.getData().forEach((player, data) -> db.hashSet(player, new LinkedHashMap<>(data)));
+		return true;
 	}
 
 
@@ -404,14 +445,55 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		return language.get(message);
 	}
 
-	public String translateMessage(String message, Object... args) {  //%s 字符串 %n换行符
+	public String translateMessage(String message, Map<String, Object> args) {  //%s 字符串 %n换行符
 		if (language.get(message) == null) {
 			return message;
 		}
 
-		return String.format(language.get(message), args);
+		final String[] msg = {language.get(message)};
+		args.forEach((key, value) -> {
+			if (value instanceof Double || value instanceof Float) {
+				msg[0] = msg[0].replace("$" + key + "$", String.valueOf(Math.round((double) value)));
+			} else {
+				msg[0] = msg[0].replace("$" + key + "$", value.toString());
+			}
+		});
+		return msg[0];
 	}
 
+	public String translateMessage(String message, Object... keys_values) {
+		Map<String, Object> map = new HashMap<>();
+
+		String key = null;
+		for (Object o : keys_values) {
+			if (key == null) {
+				key = o.toString();
+			} else {
+				map.put(key, o);
+			}
+		}
+
+		return translateMessage(message, map);
+	}
+
+
+	public LinkedHashMap<String, LinkedHashMap<String, String>> getDataMap() {
+		LinkedHashMap<String, LinkedHashMap<String, String>> result = new LinkedHashMap<>();
+
+		for (String s : db.getKeys()) {
+			result.put(s, new LinkedHashMap<String, String>() {
+				{
+					db.hashGetAll(s).forEach((key, value) -> put(key, value.toString()));
+				}
+			});
+		}
+
+		return result;
+	}
+
+	public void updateBankLastTime(long time) {
+		db.set("last-time", time);
+	}
 
 	/*
 	 * ***********************
@@ -420,35 +502,37 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	 */
 
 	@Override
-	public String getMoneyUnit1() {
-		return getMonetaryUnit1();
+	public String getCurrency(CurrencyType type) {
+		return type.booleanValue() ? getCurrency2() : getCurrency1();
 	}
 
 	@Override
+	public String getCurrency1() {
+		return getConfig().getString("money-unit-1");
+	}
+
+	@Override
+	public String getCurrency2() {
+		return getConfig().getString("money-unit-2");
+	}
+
+
+	@Override
+	@Deprecated
+	public String getMoneyUnit1() {
+		return getCurrency1();
+	}
+
+	@Override
+	@Deprecated
 	public String getMonetaryUnit1() {
 		return getCurrency1();
 	}
 
 	@Override
-	public String getCurrency1() {
-		try {
-			return getConfig().get("money-unit-1").toString();
-		} catch (Exception ignore) {
-
-		}
-
-		return null;
-	}
-
-
-	@Override
+	@Deprecated
 	public String getMoneyUnit2() {
-		return getMonetaryUnit2();
-	}
-
-	@Override
-	public String getCurrency(CurrencyType type) {
-		return type.booleanValue() ? getMoneyUnit2() : getMoneyUnit1();
+		return getCurrency2();
 	}
 
 	@Override
@@ -458,245 +542,317 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	}
 
 	@Override
+	@Deprecated
 	public String getMonetaryUnit(CurrencyType unit) {
 		return getCurrency(unit);
 	}
 
 	@Override
+	@Deprecated
 	public String getMonetaryUnit2() {
 		return getCurrency2();
 	}
 
 	@Override
-	public String getCurrency2() {
-		try {
-			return getConfig().get("money-unit-2").toString();
-		} catch (Exception ignore) {
-
-		}
-
-		return null;
-	}
-
-	@Override
+	@Deprecated
 	public String getMoneyUnit(CurrencyType type) {
 		return getCurrency(type);
 	}
 
 	@Override
+	@Deprecated
 	public String getMonetaryUnit(boolean unit) {
 		return getCurrency(CurrencyType.fromBoolean(unit));
 	}
 
 
 	@Override
+	@Deprecated
 	public boolean isMoneyUnit2Enabled() {
+		return isCurrency2Enabled();
+	}
+
+	@Override
+	public boolean isCurrency2Enabled() {
 		try {
-			return getConfig().get("enable-unit-2") == null || !Boolean.parseBoolean(getConfig().get("enable-unit-2").toString());
+			return getConfig().get("enable-unit-2") == null ||
+					!Boolean.parseBoolean(getConfig().get("enable-unit-2").toString());
 		} catch (Exception ignore) {
 
 		}
 		return false;
 	}
 
+
 	@Override
-	public boolean isCurrency2Enabled() {
-		return isMoneyUnit2Enabled();
+	public float getMoney(String player, CurrencyType type) {
+		if (type == CurrencyType.FIRST) {
+			return Float.parseFloat(db.hashGet(player, "money1").toString());
+		} else {
+			return Float.parseFloat(db.hashGet(player, "money2").toString());
+		}
 	}
 
+	@Override
+	public float getMoney(Player player, CurrencyType type) {
+		return getMoney(player.getName(), type);
+	}
+
+	@Override
+	public float getMoney(Player player) {
+		return getMoney(player.getName(), CurrencyType.FIRST);
+	}
+
+	@Override
+	public float getMoney(String player) {
+		return getMoney(player, CurrencyType.SECOND);
+	}
 
 	@Override
 	@Deprecated
-	public double getMoney(String player, boolean type) {
+	public float getMoney(String player, boolean type) {
 		return getMoney(player, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	@Deprecated
-	public double getMoney(Player player, boolean type) {
+	public float getMoney(Player player, boolean type) {
 		return getMoney(player.getName(), CurrencyType.fromBoolean(type));
 	}
 
-	@Override
-	public double getMoney(String player, CurrencyType type) {
-		try {
-			if (type == CurrencyType.FIRST) {
-				return (Double) db.hashGet(player, "money1");
-			} else {
-				return (Double) db.hashGet(player, "money2");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return 0D;
-	}
-
-	@Override
-	public double getMoney(Player player, CurrencyType type) {
-		return getMoney(player.getName(), type);
-	}
-
-	@Override
-	public double getMoney(Player player) {
-		return getMoney(player.getName(), CurrencyType.FIRST);
-	}
-
-	@Override
-	public double getMoney(String player) {
-		return getMoney(player, CurrencyType.SECOND);
-	}
-
 
 	@Override
 	@Deprecated
-	public void setMoney(String player, double money, boolean type) {
-		setMoney(player, money, CurrencyType.fromBoolean(type));
+	public boolean setMoney(String player, float money, boolean type) {
+		return setMoney(player, money, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	@Deprecated
-	public void setMoney(Player player, double money, boolean type) {
-		setMoney(player, money, CurrencyType.fromBoolean(type));
+	public boolean setMoney(Player player, float money, boolean type) {
+		return setMoney(player, money, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
-	public void setMoney(String player, double money, CurrencyType type) {
+	public boolean setMoney(String player, float money, CurrencyType type) {
 		MoneyChangeEvent event = new MoneyChangeEvent(player, money, type);
 		Server.getInstance().getPluginManager().callEvent(event);
 		if (!event.isCancelled()) {
 			if (type == CurrencyType.FIRST) {
-				db.hashSet(player, "money1", event.getTarget());
+				return db.hashSet(player, "money1", event.getTarget());
 			} else {
-				db.hashSet(player, "money2", event.getTarget());
+				return db.hashSet(player, "money2", event.getTarget());
 			}
 		}
+
+		return false;
 	}
 
 	@Override
-	public void setMoney(Player player, double money, CurrencyType type) {
-		setMoney(player.getName(), money, type);
+	public boolean setMoney(Player player, float money, CurrencyType type) {
+		return setMoney(player.getName(), money, type);
 	}
 
 	@Override
-	public void setMoney(Player player, double money) {
-		setMoney(player.getName(), money, CurrencyType.FIRST);
+	public boolean setMoney(Player player, float money) {
+		return setMoney(player.getName(), money, CurrencyType.FIRST);
 	}
 
 	@Override
-	public void setMoney(String player, double money) {
-		setMoney(player, money, CurrencyType.FIRST);
+	public boolean setMoney(String player, float money) {
+		return setMoney(player, money, CurrencyType.FIRST);
 	}
 
-
-	@Override
-	@Deprecated
-	public void addMoney(Player player, double amount, boolean type) {
-		addMoney(player.getName(), amount, CurrencyType.fromBoolean(type));
-	}
 
 	@Override
 	@Deprecated
-	public void addMoney(String player, double amount, boolean type) {
-		setMoney(player, getMoney(player, CurrencyType.fromBoolean(type)) + amount, CurrencyType.fromBoolean(type));
-	}
-
-	@Override
-	public void addMoney(Player player, double amount, CurrencyType type) {
-		addMoney(player.getName(), amount, type);
-	}
-
-	@Override
-	public void addMoney(String player, double amount, CurrencyType type) {
-		setMoney(player, getMoney(player, type) + amount, type);
-	}
-
-	@Override
-	public void addMoney(String player, double amount) {
-		addMoney(player, amount, CurrencyType.FIRST);
-	}
-
-	public void addMoney(Player player, double amount) {
-		addMoney(player.getName(), amount, CurrencyType.FIRST);
-	}
-
-	@Override
-	public void reduceMoney(String player, double amount) {
-		addMoney(player, -amount);
-	}
-
-	@Override
-	public void reduceMoney(Player player, double amount) {
-		addMoney(player, -amount);
+	public boolean addMoney(Player player, float amount, boolean type) {
+		return addMoney(player.getName(), amount, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
 	@Deprecated
-	public void reduceMoney(Player player, double amount, boolean type) {
-		addMoney(player, -amount, CurrencyType.fromBoolean(type));
+	public boolean addMoney(String player, float amount, boolean type) {
+		return addMoney(player, amount, CurrencyType.fromBoolean(type));
+	}
+
+	@Override
+	public boolean addMoney(Player player, float amount, CurrencyType type) {
+		return addMoney(player.getName(), amount, type);
+	}
+
+	@Override
+	public boolean addMoney(String player, float amount, CurrencyType type) {
+		MoneyIncreaseEvent event = new MoneyIncreaseEvent(player, amount, type);
+		getServer().getPluginManager().callEvent(event);
+		return !event.isCancelled() && setMoney(player, getMoney(player) + amount, type);
+	}
+
+	@Override
+	public boolean addMoney(String player, float amount) {
+		return addMoney(player, amount, CurrencyType.FIRST);
+	}
+
+	@Override
+	public boolean addMoney(Player player, float amount) {
+		return addMoney(player.getName(), amount, CurrencyType.FIRST);
+	}
+
+
+	@Override
+	public boolean reduceMoney(String player, float amount, CurrencyType type) {
+		MoneyDecreaseEvent event = new MoneyDecreaseEvent(player, amount, type);
+		getServer().getPluginManager().callEvent(event);
+		return !event.isCancelled() && setMoney(player, getMoney(player) - amount);
+	}
+
+	@Override
+	public boolean reduceMoney(Player player, float amount, CurrencyType type) {
+		return reduceMoney(player.getName(), amount, type);
+	}
+
+	@Override
+	public boolean reduceMoney(String player, float amount) {
+		return reduceMoney(player, amount, CurrencyType.FIRST);
+	}
+
+	@Override
+	public boolean reduceMoney(Player player, float amount) {
+		return reduceMoney(player, amount, CurrencyType.FIRST);
 	}
 
 	@Override
 	@Deprecated
-	public void reduceMoney(String player, double amount, boolean type) {
-		addMoney(player, -amount, CurrencyType.fromBoolean(type));
+	public boolean reduceMoney(Player player, float amount, boolean type) {
+		return reduceMoney(player, amount, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
-	public void reduceMoney(Player player, double amount, CurrencyType type) {
-		reduceMoney(player.getName(), amount, type);
+	@Deprecated
+	public boolean reduceMoney(String player, float amount, boolean type) {
+		return reduceMoney(player, amount, CurrencyType.fromBoolean(type));
 	}
 
 	@Override
-	public void reduceMoney(String player, double amount, CurrencyType type) {
-		addMoney(player, -amount, type);
-	}
-
-	@Override
-	public double getBank(Player player) {
+	public float getBank(Player player) {
 		return getBank(player.getName());
 	}
 
 	@Override
-	public double getBank(String player) {
-		try {
-			return (double) db.hashGet(player, "bank");
-		} catch (Exception ignore) {
-
-		}
-
-		return 0D;
+	public float getBank(String player) {
+		return Float.parseFloat(db.hashGet(player, "bank").toString());
 	}
 
 	@Override
-	public void setBank(Player player, double bank) {
-		setBank(player.getName(), bank);
+	public boolean setBank(Player player, float bank) {
+		return setBank(player.getName(), bank);
 	}
 
 	@Override
-	public void setBank(String player, double bank) {
+	public boolean setBank(String player, float bank) {
 		BankChangeEvent event = new BankChangeEvent(player, bank);
 		Server.getInstance().getPluginManager().callEvent(event);
-		if (!event.isCancelled()) {
-			db.hashSet(player, "bank", event.getTarget());
+		return !event.isCancelled() && db.hashSet(player, "bank", event.getTarget());
+	}
+
+
+	@Override
+	public int setAllMoney(final float amount) {
+		return setAllMoney(amount, CurrencyType.FIRST);
+	}
+
+	@Override
+	public int setAllMoney(final float amount, final CurrencyType type) {
+		int i = 0;
+		for (String s : getPlayersFiltered()) {
+
+			i++;
+			setMoney(s, amount, type);
 		}
+		return i;
+	}
+
+	@Override
+	public int addAllMoney(final float amount) {
+		return addAllMoney(amount, CurrencyType.FIRST);
+	}
+
+	@Override
+	public int addAllMoney(final float amount, final CurrencyType type) {
+		int i = 0;
+		for (String s : getPlayersFiltered()) {
+
+			i++;
+			addMoney(s, amount, type);
+		}
+		return i;
+	}
+
+	@Override
+	public int reduceAllMoney(final float amount) {
+		return reduceAllMoney(amount, CurrencyType.FIRST);
+	}
+
+	@Override
+	public int reduceAllMoney(final float amount, final CurrencyType type) {
+		int i = 0;
+		for (String s : getPlayersFiltered()) {
+
+			i++;
+			reduceMoney(s, amount, type);
+		}
+		return i;
 	}
 
 
 	@Override
-	public void setAllMoney(final double amount) {
-		setAllMoney(amount, CurrencyType.FIRST);
+	public boolean addBank(String player, float amount) {
+		BankIncreaseEvent event = new BankIncreaseEvent(player, amount);
+		getServer().getPluginManager().callEvent(event);
+		return !event.isCancelled() && setBank(player, getBank(player) + event.getAmount());
+
 	}
 
 	@Override
-	public void setAllMoney(final double amount, CurrencyType type) {
-		final String k = type.booleanValue() ? "money1" : "money2";
+	public boolean addBank(Player player, float amount) {
+		return addBank(player.getName(), amount);
+	}
 
-		for (String s : db.getKeys()) {
-			if (db.hashGetAll(s).isEmpty()) {
-				continue; // not a map's key
+
+	@Override
+	public boolean reduceBank(final String player, final float amount) {
+		BankDecreaseEvent event = new BankDecreaseEvent(player, amount);
+		getServer().getPluginManager().callEvent(event);
+		return !event.isCancelled() && setBank(player, getBank(player) - event.getAmount());
+	}
+
+	@Override
+	public boolean reduceBank(final Player player, final float amount) {
+		return reduceMoney(player.getName(), amount);
+	}
+
+
+	@Override
+	public int setAllBank(float amount) {
+		int i = 0;
+		for (String s : getPlayersFiltered()) {
+			if (setBank(s, amount)) {
+				i++;
 			}
-
-			db.hashSet(s, k, amount);
 		}
+		return i;
+	}
+
+
+	@Override
+	public Set<String> getPlayers() {
+		return new LinkedHashSet<>(db.getKeys());
+	}
+
+	@Override
+	public Set<String> getPlayersFiltered() {
+		Set<String> player = getPlayers();
+		player.removeIf((key) -> db.hashGetAll(key).isEmpty());
+		return player;
 	}
 }

@@ -15,8 +15,10 @@ import java.util.Map;
  * @since Money 2.0.0
  */
 public class GiveOnline2Command extends MoneyCommand {
-	public GiveOnline2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+	public GiveOnline2Command(String name, Money owner, String[] aliases,
+	                          Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.giveonline2");
 	}
 
 	@Override
@@ -32,26 +34,32 @@ public class GiveOnline2Command extends MoneyCommand {
 		}
 
 		if (args.length < 1) {
-			sender.sendMessage(this.getPlugin().translateMessage("give-online-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("give-online-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to;
+		float to;
 
 		try {
-			to = Double.parseDouble(args[0]);
+			to = Float.parseFloat(args[0]);
 		} catch (NumberFormatException e) {
 			sender.sendMessage(this.getPlugin().translateMessage("number-format-error"));
 			return true;
 		}
 		Server.getInstance().getOnlinePlayers().forEach((uuid, player) -> {
 			getPlugin().addMoney(player, to, CurrencyType.SECOND);
-			player.sendMessage(getPlugin().translateMessage("give-done", sender.getName(), to, getPlugin().getMoneyUnit2()));
+			player.sendMessage(getPlugin().translateMessage("give-online-for-you",
+					"name", sender.getName(),
+					"amount", to,
+					"type", getPlugin().getCurrency2()));
 		});
 
-		getPlugin().setAllMoney(to, CurrencyType.SECOND);
+		int count = getPlugin().addAllMoney(to, CurrencyType.SECOND);
 
-		sender.sendMessage(getPlugin().translateMessage("super-set-success", getPlugin().getMoneyUnit2(), to));
+		sender.sendMessage(getPlugin().translateMessage("give-online-done",
+				"count", count,
+				"type", getPlugin().getCurrency2(),
+				"amount", to));
 		return true;
 	}
 }

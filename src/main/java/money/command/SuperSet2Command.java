@@ -1,6 +1,5 @@
 package money.command;
 
-import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
@@ -14,8 +13,10 @@ import java.util.Map;
  * @since Money 2.0.0
  */
 public class SuperSet2Command extends MoneyCommand {
-	public SuperSet2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+	public SuperSet2Command(String name, Money owner, String[] aliases,
+	                        Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.superset2");
 	}
 
 	@Override
@@ -25,27 +26,25 @@ public class SuperSet2Command extends MoneyCommand {
 			return true;
 		}
 
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
-			return true;
-		}
-
 		if (args.length < 1) {
-			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", this.getName()));
+			sender.sendMessage(this.getPlugin().translateMessage("set-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to;
+		float to;
 
 		try {
-			to = Double.parseDouble(args[0]);
+			to = Float.parseFloat(args[0]);
 		} catch (NumberFormatException e) {
 			sender.sendMessage(this.getPlugin().translateMessage("number-format-error"));
 			return true;
 		}
-		getPlugin().setAllMoney(to, CurrencyType.SECOND);
+		int count = getPlugin().setAllMoney(to, CurrencyType.SECOND);
 
-		sender.sendMessage(getPlugin().translateMessage("super-set-success", getPlugin().getMoneyUnit2(), new Integer(args[0])));
+		sender.sendMessage(getPlugin().translateMessage("super-set-success",
+				"count", count,
+				"type", getPlugin().getCurrency2(),
+				"amount", new Integer(args[0])));
 		return true;
 	}
 }

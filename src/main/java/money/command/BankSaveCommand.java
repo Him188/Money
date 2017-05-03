@@ -12,10 +12,13 @@ import java.util.Map;
  * @author Him188 @ Money Project
  * @since Money 2.0.0
  */
-public class BankSaveCommand extends MoneyCommand{
-	public BankSaveCommand(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
+public class BankSaveCommand extends MoneyCommand {
+	public BankSaveCommand(String name, Money owner, String[] aliases,
+	                       Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
+		this.setPermission("money.command.banksave");
 	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!this.testPermission(sender)) {
@@ -28,22 +31,37 @@ public class BankSaveCommand extends MoneyCommand{
 		}
 
 		if (args.length < 1) {
-			sender.sendMessage(getPlugin().translateMessage("bank-save-format-error", this.getName()));
+			sender.sendMessage(getPlugin().translateMessage("bank-save-format-error", "cmd", this.getName()));
 			return true;
 		}
 
-		double to = Double.parseDouble(args[0]);
-		Double money = getPlugin().getMoney((Player) sender);
+		float to = Float.parseFloat(args[0]);
+		float money = getPlugin().getMoney((Player) sender);
 		if (money < to) {
 			sender.sendMessage(getPlugin().translateMessage("bank-save-value-error"));
 			return true;
-
 		}
-		getPlugin().setMoney((Player) sender, money - to);
-		getPlugin().reduceMoney((Player) sender, to);
 
+		if (!getPlugin().reduceMoney((Player) sender, to)) {
+			sender.sendMessage(getPlugin().translateMessage("bank-save-failed",
+					"amount", (Float.parseFloat(args[0])),
+					"type", getPlugin().getCurrency1())
+			);
+			return true;
+		}
 
-		sender.sendMessage(getPlugin().translateMessage("bank-save-success", Math.round(Double.parseDouble(args[0])), getPlugin().getMoneyUnit1()));
+		if (!getPlugin().addBank((Player) sender, to)) {
+			sender.sendMessage(getPlugin().translateMessage("bank-save-failed",
+					"amount", (Float.parseFloat(args[0])),
+					"type", getPlugin().getCurrency1())
+			);
+			getPlugin().addMoney((Player) sender, to);
+
+			return true;
+		}
+		sender.sendMessage(getPlugin().translateMessage("bank-save-success",
+				"amount", (Float.parseFloat(args[0])),
+				"type", getPlugin().getCurrency1()));
 		return true;
 	}
 }
