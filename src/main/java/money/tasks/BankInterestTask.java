@@ -1,4 +1,4 @@
-package money.testks;
+package money.tasks;
 
 import cn.nukkit.scheduler.PluginTask;
 import money.Money;

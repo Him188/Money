@@ -21,7 +21,7 @@ import money.event.money.MoneyChangeEvent;
 import money.event.money.MoneyDecreaseEvent;
 import money.event.money.MoneyIncreaseEvent;
 
-import money.testks.BankInterestTask;
+import money.tasks.BankInterestTask;
 import net.mamoe.moedb.db.ConfigDatabase;
 import net.mamoe.moedb.db.KeyValueDatabase;
 

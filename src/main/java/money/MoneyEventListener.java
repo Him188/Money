@@ -18,8 +18,8 @@ public class MoneyEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onJoin(PlayerJoinEvent event) {
-		money.db.hashSet(event.getPlayer().getName(), "money1", money.getConfig().getFloat("initial-money-1", 0));
-		money.db.hashSet(event.getPlayer().getName(), "money2", money.getConfig().getFloat("initial-money-2", 0));
-		money.db.hashSet(event.getPlayer().getName(), "bank", money.getConfig().getFloat("initial-bank-money", 0));
+		money.db.hashSet(event.getPlayer().getName(), "money1", money.getConfig().getDouble("initial-money-1", 0));
+		money.db.hashSet(event.getPlayer().getName(), "money2", money.getConfig().getDouble("initial-money-2", 0));
+		money.db.hashSet(event.getPlayer().getName(), "bank", money.getConfig().getDouble("initial-bank-money", 0));
 	}
 }
