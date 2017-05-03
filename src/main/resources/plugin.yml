@@ -3,7 +3,7 @@ main: money.Money
 version: 1.7.2
 api: [1.0.0]
 load: STARTUP
-author: Him188
+author: Him188 @ Mamoe Tech
 description: "Money plugin for Nukkit"
 
 updateInfo-1.0.0:
@@ -20,7 +20,7 @@ updateInfo-1.1.0:
 - "2016-06-06 支持 英文, 繁体中文"
 
 updateinfo-1.2.0:
-- "2016-06-08 新增 事件系统(money.event.MoneyChangeEvent, Money.event.BankChangeEvent)"
+- "2016-06-08 新增 事件系统(money.event.money.MoneyChangeEvent, Money.event.BankChangeEvent)"
 - "2016-06-08 修改 money.Money#setMoney(String, double, boolean)"
 - "2016-06-08 修改 money.Money#setBank(String, double)"
 
