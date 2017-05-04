@@ -2,12 +2,11 @@
 # 1: Config (通常使用, 本地存储. 无需填写其他内容)
 # 2: Redis (网络数据库, 可用于多服统一数据, 需要搭建或购买, 也需要配置 redis-settings)
 # 3: MySQL (暂不支持)
-# 4: Oracle Database (暂不支持)
 # 默认: 1
 database-type: 1
 
 # 当选择存储方式为数据库时需要添加以下 4 项 (host, port, user, password)
-redis-settings:
+database-server-settings:
   # 数据库服务器地址 localhost 指当前主机
   host: "localhost"
   # 数据库端口号, Redis 默认端口 6379. MySQL 默认端口 3306

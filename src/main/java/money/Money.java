@@ -8,11 +8,12 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.server.ServerCommandEvent;
+import cn.nukkit.permission.Permission;
 import cn.nukkit.plugin.MethodEventExecutor;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
-
 import money.command.*;
 import money.event.bank.BankChangeEvent;
 import money.event.bank.BankDecreaseEvent;
@@ -20,12 +21,14 @@ import money.event.bank.BankIncreaseEvent;
 import money.event.money.MoneyChangeEvent;
 import money.event.money.MoneyDecreaseEvent;
 import money.event.money.MoneyIncreaseEvent;
-
 import money.tasks.BankInterestTask;
 import net.mamoe.moedb.db.ConfigDatabase;
 import net.mamoe.moedb.db.KeyValueDatabase;
+import net.mamoe.moedb.db.RedisDatabase;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 /**
@@ -46,7 +49,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	private Map<String, String> commands = new HashMap<>();
 
 	private final static String nowCommandVersion = "4";
-	private final static String nowLanguageVersion = "5";
+	private final static String nowLanguageVersion = "6";
 
 
 	private static final Class<?>[] COMMAND_CLASSES = {
@@ -69,14 +72,14 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			WalletInfo2Command.class,
 	};
 
-	private static CommandExecutor matchExecutor(String key) {
+	private static CommandExecutor matchExecutor(String key, String name, Money owner, String[] args, Map<String, CommandParameter[]> commandArgs) {
 		key = key.replace("-", "");
 		key = key.toLowerCase();
-
 		for (Class<?> commandClass : COMMAND_CLASSES) {
-			if (commandClass.getSimpleName().toLowerCase().equals(key)) {
+			if (commandClass.getSimpleName().toLowerCase().equals(key + "command")) {
 				try {
-					return (CommandExecutor) commandClass.newInstance();
+					Constructor<?> constructor = commandClass.getConstructor(String.class, Money.class, String[].class, Map.class);
+					return (CommandExecutor) constructor.newInstance(name, owner, args, commandArgs);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return null;
@@ -97,7 +100,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@Override
 	public void onLoad() {
-		if (!getDataFolder().mkdir()) {
+		if (!getDataFolder().mkdir() && !getDataFolder().exists()) {
 			this.getLogger().warning("无法创建配置目录 (" + getDataFolder() + ")");
 			this.getLogger().warning("Could not create data directory (" + getDataFolder() + ")");
 		}
@@ -107,7 +110,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	private Integer errorTimes = 0;
 
 	//由事件触发
-	private void chooseLanguage(ServerCommandEvent event) {
+	@SuppressWarnings("WeakerAccess")
+	public void chooseLanguage(ServerCommandEvent event) {
 		if (getConfig().getAll().isEmpty()) {
 			event.setCancelled();
 
@@ -134,14 +138,18 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 						language = "cht";
 						break;
 					default:
-						this.getLogger().notice("请输入 'chs' 或 'cht' 或 'eng'");
-						this.getLogger().notice("Please enter 'chs', 'cht' or 'eng'");
+						this.getLogger().notice("欢迎使用本经济插件, 请选择语言: (输入 3 次错误自动选择中文)");
+						this.getLogger().notice(
+								"Hello. Please choose a language: (It will choose Chinese Simplified automatically when inputting error 3 times)");
+						this.getLogger().info(TextFormat.AQUA + "chs: 简体中文");
+						this.getLogger().info(TextFormat.AQUA + "cht: 繁體中文");
+						this.getLogger().info(TextFormat.AQUA + "eng: English\n");
 						errorTimes++;
 						return;
 				}
 			}
 
-			saveResource("Language_" + language + ".yml", "Language.yml", true);
+			saveResource("Language_" + language + ".properties", "Language.properties", true);
 			saveResource("Config_" + language + ".yml", "Config.yml", true);
 			saveResource("Commands_" + language + ".yml", "Commands.yml", true);
 
@@ -154,14 +162,14 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		if (getConfig().getAll().isEmpty()) {
 			try {
 				getServer().getPluginManager().registerEvent(ServerCommandEvent.class, this, EventPriority.HIGHEST,
-						new MethodEventExecutor(this.getClass().getMethod("chooseLanguage")), this);
+						new MethodEventExecutor(this.getClass().getDeclaredMethod("chooseLanguage", ServerCommandEvent.class)), this);
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
 
-			this.getLogger().notice("欢迎使用本插件, 请选择语言: (输入 3 次错误自动选择中文)");
+			this.getLogger().notice("欢迎使用本经济插件, 请选择语言: (输入 3 次错误自动选择中文)");
 			this.getLogger().notice(
-					"Hello. Please choose a language: (It will choose chs automatically when inputting error 3 times)");
+					"Hello. Please choose a language: (It will choose Chinese Simplified automatically when inputting error 3 times)");
 			this.getLogger().info(TextFormat.AQUA + "chs: 简体中文");
 			this.getLogger().info(TextFormat.AQUA + "cht: 繁體中文");
 			this.getLogger().info(TextFormat.AQUA + "eng: English\n");
@@ -180,8 +188,33 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			initLanguage();
 			initCommands();
 
+			/* Register permissions */
+			final Map<String, String> permissions = new HashMap<String, String>() {
+				{
+					put("money.command.bankinfo", "true");
+					put("money.command.banksave", "true");
+					put("money.command.banktake", "true");
+					put("money.command.give1", "true");
+					put("money.command.give2", "true");
+					put("money.command.giveonline1", "op");
+					put("money.command.giveonline2", "op");
+					put("money.command.list1", "true");
+					put("money.command.list2", "true");
+					put("money.command.pay1", "true");
+					put("money.command.pay2", "true");
+					put("money.command.set1", "op");
+					put("money.command.set2", "op");
+					put("money.command.superset1", "op");
+					put("money.command.superset1", "op");
+					put("money.command.walletinfo1", "true");
+					put("money.command.walletinfo2", "true");
+				}
+			};
 
-			/* Register Commands */
+			permissions.forEach((name, permission) -> getServer().getPluginManager().addPermission(new Permission(name, permission, permission)));
+
+
+			/* Register Command parameters */
 
 			final Map<String, Map<String, CommandParameter[]>> parameters =
 					new HashMap<String, Map<String, CommandParameter[]>>() {
@@ -281,8 +314,9 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 					};
 
 			/* Register commands */
+
 			commands.forEach((key, value) -> {
-				if (value == null || value.equals("") || value.equals("version") || value.equals("type")) {
+				if (value == null || value.equals("") || value.equals("version") || value.equals("type") || value.equals("language")) {
 					return;
 				}
 
@@ -292,27 +326,24 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 				PluginCommand cmd;
 				cmd = new PluginCommand<>(value, this);
-				cmd.setExecutor(matchExecutor(key));
-				cmd.setCommandParameters(parameters.getOrDefault(key, new HashMap<>()));
-				Server.getInstance().getCommandMap().register(key, cmd);
+				cmd.setExecutor(matchExecutor(key, value, this, new String[0], parameters.getOrDefault(key, new HashMap<>())));
+				Server.getInstance().getCommandMap().register(value, cmd);
 			});
 
 
 			Server.getInstance().getScheduler().scheduleDelayedTask(this, new BankInterestTask(this,
 					Long.parseLong(getConfig().getAll().getOrDefault("bank-interest-time", 0).toString()) * 1000,
-					1 + Float.parseFloat(getConfig().getAll().getOrDefault("bank-interest-value", 0).toString()),
-					Long.parseLong(db.get("last-time", "0").toString()),
+					Float.parseFloat(getConfig().getAll().getOrDefault("bank-interest-value", 0).toString()),
+					Long.parseLong(db.get("last-time", new Date().getTime()).toString()),
 					getConfig().getBoolean("bank-interest-real", true)), 1200);
 
-			if (getConfig().getInt("database-save-tick", 2400) != 0) {
+			if (getConfig().getString("database-type", "1").equals("1") && getConfig().getInt("database-save-tick", 2400) != 0) {
 				Server.getInstance().getScheduler()
 						.scheduleDelayedTask(this, this::saveConfig, getConfig().getInt("database-save-tick", 2400));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		Server.getInstance().getPluginManager().registerEvents(this, this); // TODO: 2017/5/1 Event 分开
 	}
 
 	private void initLanguage() {
@@ -335,7 +366,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			}
 		};
 
-		if (!Objects.equals(language.get("version"), nowLanguageVersion)) {
+		if (!language.getOrDefault("version", "0").equals(nowLanguageVersion)) {
 			saveResource("Language_" + language.getOrDefault("type", "chs") + ".properties", "Language.properties",
 					true);
 			initLanguage(language);
@@ -376,6 +407,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	}
 
 
+	@Override
+	public void reloadConfig() {
+		//noinspection ResultOfMethodCallIgnored
+		new File(getDataFolder() + "/Config.yml").renameTo(new File(getDataFolder() + "/config.yml"));
+		super.reloadConfig();
+	}
+
 	private void initConfig() {
 		reloadConfig();
 		Config config = new Config(Config.YAML);
@@ -396,29 +434,53 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
 	private void initDatabase() {
-		db = new ConfigDatabase(new Config(getDataFolder() + "/db.dat", Config.YAML),
-				getConfig().getInt("database-save-tick", 2400) == 0);
+		switch (getConfig().getString("database-type", "1")) {
+			case "1":
+				db = new ConfigDatabase(new Config(getDataFolder() + "/db.dat", Config.YAML),
+						getConfig().getInt("database-save-tick", 2400) == 0);
 
-		if (!new File(getDataFolder() + "/db.dat").exists() && new File(getDataFolder() + "/Data.yml").exists()) {
-			if (!convertDatabase(getDataFolder() + "/Data.yml")) {
-				getLogger().critical("数据转换失败, 但插件仍将继续加载, 使用空的新数据库. 旧的文件保留, 你可以修复其错误后重新");
-				getLogger().critical("Data file converting failed. But the plugin will still enable while using" +
-						" new-empty-database. Old data file will not be deleted, you can fix error(s) which is printed " +
-						"just now and restart the server, the plugin will retry converting.");
-			} else {
-				if (new File(getDataFolder() + "/Data.yml").renameTo(new File(getDataFolder() + "/Data.yml.bak"))) {
-					getLogger().notice("数据转换成功! 旧文件已经被重命名为 \"Data.yml.bak\", 你可以删除该文件, 或是将其作为一个备份.");
-					getLogger().notice("Data file converting success! The old data file is renamed as " +
-							"\"Data.yml.bak\", you can delete that file, or make it as a backup.");
-				} else {
-					getLogger().notice("数据转换成功, 但重命名旧文件 \"Data.yml\" 为 \"Data.yml.bak\" 失败, 请手动重命名将其作为一个备份或删除");
-					getLogger()
-							.notice("Data file converting success! But renaming old file \"Data.yml\" to \"Data.yml.bak\" failed. " +
-									"Please rename it manually to make it as a backup or delete it.");
+				if (!new File(getDataFolder() + "/db.dat").exists() && new File(getDataFolder() + "/Data.yml").exists()) {
+					if (!convertDatabase(getDataFolder() + "/Data.yml")) {
+						getLogger().critical("数据转换失败, 但插件仍将继续加载, 使用空的新数据库. 旧的文件保留, 你可以修复其错误后重新");
+						getLogger().critical("Data file converting failed. But the plugin will still enable while using" +
+								" new-empty-database. Old data file will not be deleted, you can fix error(s) which is printed " +
+								"just now and restart the server, the plugin will retry converting.");
+					} else {
+						if (new File(getDataFolder() + "/Data.yml").renameTo(new File(getDataFolder() + "/Data.yml.bak"))) {
+							getLogger().notice("数据转换成功! 旧文件已经被重命名为 \"Data.yml.bak\", 你可以删除该文件, 或是将其作为一个备份.");
+							getLogger().notice("Data file converting success! The old data file is renamed as " +
+									"\"Data.yml.bak\", you can delete that file, or make it as a backup.");
+						} else {
+							getLogger().notice("数据转换成功, 但重命名旧文件 \"Data.yml\" 为 \"Data.yml.bak\" 失败, 请手动重命名将其作为一个备份或删除");
+							getLogger()
+									.notice("Data file converting success! But renaming old file \"Data.yml\" to \"Data.yml.bak\" failed. " +
+											"Please rename it manually to make it as a backup or delete it.");
+						}
+
+					}
 				}
-
-			}
+				return;
+			case "2":
+				ConfigSection section = getConfig().getSection("database-server-settings");
+				try {
+					db = new RedisDatabase(
+							section.getString("host", "localhost"),
+							section.getInt("port", 6379),
+							section.getString("user", ""),
+							section.getString("password", "")
+					);
+				} catch (JedisConnectionException e) {
+					getLogger().critical("无法连接 Redis 数据库.");
+					getLogger().critical("Cannot connect redis database server");
+					Server.getInstance().shutdown();
+				}
+				return;
+			default:
+				getLogger().critical("目前仅支持 Config 和 Redis 数据库");
+				getLogger().critical("Now this plugin only support Config and Redis database");
+				Server.getInstance().shutdown();
 		}
+
 	}
 
 
@@ -470,6 +532,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 				key = o.toString();
 			} else {
 				map.put(key, o);
+				key = null;
 			}
 		}
 
@@ -575,8 +638,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 	@Override
 	public boolean isCurrency2Enabled() {
 		try {
-			return getConfig().get("enable-unit-2") == null ||
-					!Boolean.parseBoolean(getConfig().get("enable-unit-2").toString());
+			return getConfig().get("enable-unit-2") != null &&
+					Boolean.parseBoolean(getConfig().get("enable-unit-2").toString());
 		} catch (Exception ignore) {
 
 		}

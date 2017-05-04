@@ -1,6 +1,5 @@
 package money.command;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -28,10 +27,6 @@ public class GiveOnline1Command extends MoneyCommand {
 			return true;
 		}
 
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
-			return true;
-		}
 
 		if (args.length < 1) {
 			sender.sendMessage(this.getPlugin().translateMessage("give-online-format-error", "cmd", this.getName()));

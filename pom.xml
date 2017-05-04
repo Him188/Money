@@ -47,24 +47,11 @@
         <sourceDirectory>src/main/java</sourceDirectory>
 
         <resources>
-            <resource> <!--将除 plugin.yml 外所有资源文件复制到 resources 文件夹中-->
+            <resource>
                 <directory>src/main/resources</directory>
-                <targetPath>resources</targetPath>
 
                 <includes>
                     <include>**/*.*</include>
-                </includes>
-
-                <excludes>
-                    <exclude>plugin.yml</exclude>
-                </excludes>
-            </resource>
-
-            <resource> <!--将 plugin.yml 文件复制到根目录中-->
-                <directory>src/main/resources</directory>
-
-                <includes>
-                    <include>plugin.yml</include>
                 </includes>
             </resource>
         </resources>

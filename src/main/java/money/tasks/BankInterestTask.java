@@ -25,6 +25,11 @@ public class BankInterestTask extends PluginTask<Money> {
 
 	@Override
 	public void onRun(int currentTick) {
+		if (lastTime == 0) {
+			lastTime = new Date().getTime();
+			getOwner().updateBankLastTime(lastTime);
+		}
+
 		if (bankTime > 0 && new Date().getTime() - lastTime >= bankTime) {
 			BankInterestEvent event = new BankInterestEvent(bankInterest, getOwner().getPlayers());
 			getOwner().getServer().getPluginManager().callEvent(event);
@@ -37,7 +42,7 @@ public class BankInterestTask extends PluginTask<Money> {
 			if (real) {
 				lastTime += bankTime;
 				onRun(currentTick);
- 			} else {
+			} else {
 				lastTime = new Date().getTime();
 			}
 

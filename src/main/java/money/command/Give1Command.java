@@ -27,11 +27,6 @@ public class Give1Command extends MoneyCommand {
 			return true;
 		}
 
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
-			return true;
-		}
-
 		if (args.length < 2) {
 			sender.sendMessage(this.getPlugin().translateMessage("give-format-error", "cmd", this.getName()));
 			return true;

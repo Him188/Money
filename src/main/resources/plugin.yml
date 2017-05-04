@@ -6,6 +6,9 @@ load: STARTUP
 author: Him188 @ Mamoe Tech
 description: "Money plugin for Nukkit"
 
+loadBefore:
+- MoeDB
+
 updateInfo-1.0.0:
 - "2016-05-26 插件完成"
 
