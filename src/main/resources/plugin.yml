@@ -9,6 +9,9 @@ description: "Money plugin for Nukkit"
 loadBefore:
 - MoeDB
 
+depend:
+- MoeDB
+
 updateInfo-1.0.0:
 - "2016-05-26 插件完成"
 
