@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 2.0.0
+version: 2.0.1
 api: [1.0.0]
 load: STARTUP
 author: Him188 @ Mamoe Tech
@@ -73,3 +73,7 @@ updateInfo-1.7.2:
 
 updateInfo-2.0.0:
 - "2017-05-03 几乎全部重写, 更多事件, 更多api, 更高效率, 选择性数据库"
+
+updateInfo-2.0.1:
+- "2017-05-04 修复 NPE"
+- "2017-05-08 修复无法转换数据的问题"
