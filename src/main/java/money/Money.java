@@ -515,7 +515,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         final String[] msg = {language.get(message)};
         args.forEach((key, value) -> {
             if (value instanceof Double || value instanceof Float) {
-                msg[0] = msg[0].replace("$" + key + "$", String.valueOf(Math.round((double) value)));
+                msg[0] = msg[0].replace("$" + key + "$", String.valueOf(Math.round(Double.parseDouble(value.toString()))));
             } else {
                 msg[0] = msg[0].replace("$" + key + "$", value.toString());
             }
