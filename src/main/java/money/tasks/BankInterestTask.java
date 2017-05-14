@@ -9,9 +9,9 @@ import java.util.Date;
 public class BankInterestTask extends PluginTask<Money> {
 	private final long bankTime;
 	private final float bankInterest;
+	private final boolean real;
 
 	private long lastTime;
-	private final boolean real;
 
 	public BankInterestTask(Money money, long bankTime, float bankInterest, long lastTime, boolean real) {
 		super(money);

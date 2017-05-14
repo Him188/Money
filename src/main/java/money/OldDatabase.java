@@ -10,13 +10,11 @@ import java.util.Map;
  */
 class OldDatabase {
 	private Map<String, Map<String, String>> data;
-	private Money owner;
 
-	public OldDatabase(Money owner2) {
-		owner = owner2;
+	OldDatabase() {
 	}
 
-	public boolean loadFile(String file) {
+	boolean loadFile(String file) {
 		Map<String, Object> config = (new Config(file, Config.YAML)).getAll();
 		data = new HashMap<>();
 		config.entrySet().stream().filter(entry -> entry.getValue() != null).forEach(entry -> {
@@ -26,7 +24,6 @@ class OldDatabase {
 					data.put(entry.getKey(), (HashMap<String, String>) entry.getValue());
 				} catch (Exception e) {
 					e.printStackTrace();
-					owner.getLogger().warning(owner.translateMessage("load-Database-exception", e.getMessage(), e.getCause().getMessage()));
 				}
 			} else {
 				config.remove(entry.getKey());
@@ -37,7 +34,7 @@ class OldDatabase {
 		return true;
 	}
 
-	public Map<String, Map<String, String>> getData() {
+	Map<String, Map<String, String>> getData() {
 		return data;
 	}
 }

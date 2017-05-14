@@ -194,20 +194,22 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                     put("money.command.bankinfo", "true");
                     put("money.command.banksave", "true");
                     put("money.command.banktake", "true");
-                    put("money.command.give1", "true");
-                    put("money.command.give2", "true");
-                    put("money.command.giveonline1", "op");
-                    put("money.command.giveonline2", "op");
                     put("money.command.list1", "true");
                     put("money.command.list2", "true");
                     put("money.command.pay1", "true");
                     put("money.command.pay2", "true");
+                    put("money.command.walletinfo1", "true");
+                    put("money.command.walletinfo2", "true");
+
+
+                    put("money.command.give1", "op");
+                    put("money.command.give2", "op");
+                    put("money.command.giveonline1", "op");
+                    put("money.command.giveonline2", "op");
                     put("money.command.set1", "op");
                     put("money.command.set2", "op");
                     put("money.command.superset1", "op");
                     put("money.command.superset1", "op");
-                    put("money.command.walletinfo1", "true");
-                    put("money.command.walletinfo2", "true");
                 }
             };
 
@@ -324,7 +326,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                     return;
                 }
 
-                PluginCommand cmd;
+                PluginCommand<Money> cmd;
                 cmd = new PluginCommand<>(value, this);
                 cmd.setExecutor(matchExecutor(key, value, this, new String[0], parameters.getOrDefault(key, new HashMap<>())));
                 Server.getInstance().getCommandMap().register(value, cmd);
@@ -339,7 +341,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
             if (getConfig().getString("database-type", "1").equals("1") && getConfig().getInt("database-save-tick", 2400) != 0) {
                 Server.getInstance().getScheduler()
-                        .scheduleDelayedTask(this, this::saveConfig, getConfig().getInt("database-save-tick", 2400));
+                        .scheduleDelayedTask(this, ((ConfigDatabase) this.db)::save, getConfig().getInt("database-save-tick", 2400));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -441,7 +443,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
                 if (db.getKeys().size() == 0 && new File(getDataFolder() + "/Data.yml").exists()) {
                     if (!convertDatabase(getDataFolder() + "/Data.yml")) {
-                        getLogger().critical("数据转换失败, 但插件仍将继续加载, 使用空的新数据库. 旧的文件保留, 你可以修复其错误后重新");
+                        getLogger().critical("数据转换失败, 但插件仍将继续加载, 使用空的新数据库. 旧的文件保留, 你可以修复其错误后重新启动服务器");
                         getLogger().critical("Data file converting failed. But the plugin will still enable while using" +
                                 " new-empty-database. Old data file will not be deleted, you can fix error(s) which is printed " +
                                 "just now and restart the server, the plugin will retry converting.");
@@ -469,6 +471,9 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                             section.getString("user", ""),
                             section.getString("password", "")
                     );
+
+                    ((RedisDatabase) db).select(section.getInt("id", 0));
+                    ((RedisDatabase) db).echo("Money plugin is now connected!");
                 } catch (JedisConnectionException e) {
                     getLogger().critical("无法连接 Redis 数据库.");
                     getLogger().critical("Cannot connect redis database server");
@@ -480,12 +485,11 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                 getLogger().critical("Now this plugin only support Config and Redis database");
                 Server.getInstance().shutdown();
         }
-
     }
 
 
     private boolean convertDatabase(String oldFile) {
-        OldDatabase old = new OldDatabase(this);
+        OldDatabase old = new OldDatabase();
         if (!old.loadFile(oldFile)) {
             getLogger().critical("检测到旧数据文件 (Data.yml) 存在, 但无法转换为新数据库(错误原因: 无法读取该文件). 请检查是否有权限且保证未对其进行修改!");
             getLogger().critical(
@@ -507,7 +511,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         return language.get(message);
     }
 
-    public String translateMessage(String message, Map<String, Object> args) {  //%s 字符串 %n换行符
+    public String translateMessage(String message, Map<String, Object> args) {
         if (language.get(message) == null) {
             return message;
         }

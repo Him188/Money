@@ -1,3 +1,12 @@
+database-type: 1
+
+database-server-settings:
+  host: "localhost"
+  port: 0
+  user: ""
+  password: ""
+  id: 0
+
 # 是否使用多線程來處理命令(即使用命令不卡服. 但可能由於數據庫查詢原因造成(1~5秒的)延遲.)
 # 如果妳不是很理解這段話, 請不要修改.
 # 默認: true

@@ -1,12 +1,12 @@
 name: Money
 main: money.Money
-version: 2.0.1
+version: 2.0.3
 api: [1.0.0]
 load: STARTUP
 author: Him188 @ Mamoe Tech
 description: "Money plugin for Nukkit"
 
-loadBefore:
+softdepend:
 - MoeDB
 
 depend:
@@ -78,3 +78,10 @@ updateInfo-2.0.1:
 - "2017-05-04 修复 NPE"
 - "2017-05-08 修复 无法转换数据的问题"
 - "2017-05-08 修复 提示问题"
+
+updateInfo-2.0.2:
+- "2017-05-08 修复 权限组问题"
+
+updateInfo-2.0.3:
+- "2017-05-14 修复 数据保存问题"
+- "2017-05- 修复 数据保存问题"

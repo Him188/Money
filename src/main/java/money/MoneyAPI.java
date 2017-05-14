@@ -20,7 +20,7 @@ import java.util.Set;
 public interface MoneyAPI {
 	/**
 	 * @see Money#getInstance()
-	 * @since Money 1.0.0p0p
+	 * @since Money 1.0.0
 	 */
 	static Money getInstance() {
 		return Money.getInstance();

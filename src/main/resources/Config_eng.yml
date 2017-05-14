@@ -1,3 +1,12 @@
+database-type: 1
+
+database-server-settings:
+  host: "localhost"
+  port: 0
+  user: ""
+  password: ""
+  id: 0
+
 # Whether to use the multi thread to handle command (i.e. when using a command, server will not be abnormal. But may be due to a database query causes (1 ~ 5 seconds) delay.
 # If you do not understand that, please use default value.
 # Default: true

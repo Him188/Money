@@ -23,7 +23,7 @@ public class Pay2Command extends MoneyCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!this.testPermission(sender)) {
-			sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
+			//sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
 			return true;
 		}
 		if (!(sender instanceof Player)) {
