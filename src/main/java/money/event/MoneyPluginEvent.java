@@ -6,7 +6,7 @@ import cn.nukkit.event.Event;
  * 所有 Money 系列插件(包括商店, 领地等)事件都继承的基类
  *
  * @author Him188 @ Money Project
- * @since Money
+ * @since Money 2.0.0
  */
-public class MoneyPluginEvent extends Event {
+public abstract class MoneyPluginEvent extends Event {
 }
