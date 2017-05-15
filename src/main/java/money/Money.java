@@ -49,7 +49,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     private Map<String, String> commands = new HashMap<>();
 
     private final static String nowCommandVersion = "4";
-    private final static String nowLanguageVersion = "6";
+    private final static String nowLanguageVersion = "7";
 
 
     private static final Class<?>[] COMMAND_CLASSES = {
@@ -179,6 +179,12 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         }
 
 
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+save();
     }
 
     private void init() {
@@ -341,7 +347,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
             if (getConfig().getString("database-type", "1").equals("1") && getConfig().getInt("database-save-tick", 2400) != 0) {
                 Server.getInstance().getScheduler()
-                        .scheduleDelayedTask(this, ((ConfigDatabase) this.db)::save, getConfig().getInt("database-save-tick", 2400));
+                        .scheduleDelayedTask(this, this::save, getConfig().getInt("database-save-tick", 2400));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -408,6 +414,11 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         con.save();
     }
 
+    public void save(){
+        if (db instanceof ConfigDatabase) {
+            ((ConfigDatabase) db).save();
+        }
+    }
 
     @Override
     public void reloadConfig() {
@@ -447,7 +458,9 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                         getLogger().critical("Data file converting failed. But the plugin will still enable while using" +
                                 " new-empty-database. Old data file will not be deleted, you can fix error(s) which is printed " +
                                 "just now and restart the server, the plugin will retry converting.");
+
                     } else {
+                        save();
                         if (new File(getDataFolder() + "/Data.yml").renameTo(new File(getDataFolder() + "/Data.yml.bak"))) {
                             getLogger().notice("数据转换成功! 旧文件已经被重命名为 \"Data.yml.bak\", 你可以删除该文件, 或是将其作为一个备份.");
                             getLogger().notice("Data file converting success! The old data file is renamed as " +

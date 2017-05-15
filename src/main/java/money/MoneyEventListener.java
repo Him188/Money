@@ -18,8 +18,11 @@ public class MoneyEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
-        money.setMoney(event.getPlayer(), (float) money.getConfig().getDouble("initial-money-1", 0), CurrencyType.FIRST);
-        money.setMoney(event.getPlayer(), (float) money.getConfig().getDouble("initial-money-2", 0), CurrencyType.SECOND);
-        money.setBank(event.getPlayer(), (float) money.getConfig().getDouble("initial-bank-money", 0));
+        if (!money.db.hashExits(event.getPlayer().getName(), "money1")) {
+            money.setMoney(event.getPlayer(), (float) money.getConfig().getDouble("initial-money-1", 0), CurrencyType.FIRST);
+            money.setMoney(event.getPlayer(), (float) money.getConfig().getDouble("initial-money-2", 0), CurrencyType.SECOND);
+            money.setBank(event.getPlayer(), (float) money.getConfig().getDouble("initial-bank-money", 0));
+        }
+
     }
 }
