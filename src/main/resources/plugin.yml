@@ -1,8 +1,8 @@
 name: Money
 main: money.Money
-version: 2.0.3
+version: 2.0.4
 api: [1.0.0]
-load: STARTUP
+load: POSTWORLD
 author: Him188 @ Mamoe Tech
 description: "Money plugin for Nukkit"
 
@@ -88,3 +88,6 @@ updateInfo-2.0.3:
 - "2017-05-15 修复 语言文件问题"
 - "2017-05-15 修复 无权限提示问题"
 - "2017-05-15 优化 旧数据转换"
+
+updateInfo-2.0.4:
+- "2017-05-21 修改启动顺序(plugin.yml:load)为 POSTWORLD"
