@@ -91,8 +91,10 @@ updateInfo-2.0.3:
 
 updateInfo-2.0.4:
 - "2017-05-16 优化 运行效率"
-- "2017-05-21 修改启动顺序(plugin.yml:load)为 POSTWORLD"
 
 updateInfo-2.0.5:
+- "2017-05-21 修改启动顺序(plugin.yml:load)为 POSTWORLD"
+
+updateInfo-2.0.6:
 - "2017-06-05 修复 addMoney 和 reduceMoney 忽略事件修改的问题"
 - "2017-06-05 修复 reduceMoney 无法指定货币类型的问题"
