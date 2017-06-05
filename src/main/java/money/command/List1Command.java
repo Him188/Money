@@ -14,7 +14,6 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class List1Command extends MoneyCommand {
 	public List1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {

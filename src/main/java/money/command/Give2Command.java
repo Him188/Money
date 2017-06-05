@@ -13,7 +13,6 @@ import java.util.Objects;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class Give2Command extends MoneyCommand {
 	public Give2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {

@@ -10,7 +10,6 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class SuperSet2Command extends MoneyCommand {
 	public SuperSet2Command(String name, Money owner, String[] aliases,

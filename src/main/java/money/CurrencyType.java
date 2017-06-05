@@ -10,7 +10,6 @@ package money;
  * The enum is overridden {@link Object#toString()}, This method will return the value in "Config.yml" like "Coin"
  *
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public enum CurrencyType {
 	/**
@@ -29,7 +28,7 @@ public enum CurrencyType {
 	 * 可在 "Config.yml" 中修改 (项目 "money-unit-2")
 	 * 默认值为 "Point"
 	 * <br/>
-	 * The first currency type
+	 * The second currency type
 	 * It can be modified in "Config.yml" (Section "money-unit-2")
 	 * Default value is "Point"
 	 */

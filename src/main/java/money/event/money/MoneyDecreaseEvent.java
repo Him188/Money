@@ -8,7 +8,6 @@ import money.CurrencyType;
  * 货币数量 (余额)减少事件.
  *
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class MoneyDecreaseEvent extends MoneyEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

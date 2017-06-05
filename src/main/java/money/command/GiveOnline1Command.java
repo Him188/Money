@@ -11,7 +11,6 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class GiveOnline1Command extends MoneyCommand {
 	public GiveOnline1Command(String name, Money owner, String[] aliases,
@@ -42,12 +41,13 @@ public class GiveOnline1Command extends MoneyCommand {
 			return true;
 		}
 
+		final String message = getPlugin().translateMessage("give-online-for-you",
+				"name", sender.getName(),
+				"amount", to,
+				"type", getPlugin().getCurrency1());
 		Server.getInstance().getOnlinePlayers().forEach((uuid, player) -> {
 			getPlugin().addMoney(player, to, CurrencyType.FIRST);
-			player.sendMessage(getPlugin().translateMessage("give-online-for-you",
-					"name", sender.getName(),
-					"amount", to,
-					"type", getPlugin().getCurrency1()));
+			player.sendMessage(message);
 		});
 
 		int count = getPlugin().addAllMoney(to, CurrencyType.FIRST);

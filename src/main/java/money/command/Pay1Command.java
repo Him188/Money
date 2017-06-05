@@ -12,7 +12,6 @@ import java.util.Objects;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class Pay1Command extends MoneyCommand {
 	public Pay1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {

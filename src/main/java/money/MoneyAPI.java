@@ -15,12 +15,10 @@ import java.util.Set;
  *
  * @author Him188 @ Money Project
  * @see Money
- * @since Money 1.0.0
  */
 public interface MoneyAPI {
 	/**
 	 * @see Money#getInstance()
-	 * @since Money 1.0.0
 	 */
 	static Money getInstance() {
 		return Money.getInstance();
@@ -31,8 +29,6 @@ public interface MoneyAPI {
 	 * 获取第一种货币 String 值
 	 *
 	 * @return String
-	 *
-	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	String getMoneyUnit1();
@@ -47,8 +43,6 @@ public interface MoneyAPI {
 	 * 获取第二种货币 String 值
 	 *
 	 * @return String
-	 *
-	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	String getMoneyUnit2();
@@ -64,8 +58,6 @@ public interface MoneyAPI {
 	 * @param type 类型
 	 *
 	 * @return 第一/二种货币 String 值
-	 *
-	 * @since Money 1.0.0
 	 */
 	String getCurrency(CurrencyType type);
 
@@ -88,7 +80,6 @@ public interface MoneyAPI {
 	 * @return boolean
 	 *
 	 * @see Money
-	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	boolean isMoneyUnit2Enabled();
@@ -103,8 +94,6 @@ public interface MoneyAPI {
 	 * @param type   货币类型. true: 货币2, false: 货币1
 	 *
 	 * @return float
-	 *
-	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	float getMoney(String player, boolean type);
@@ -123,8 +112,6 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 *
 	 * @return float
-	 *
-	 * @since Money 1.0.0
 	 */
 	float getMoney(String player);
 
@@ -137,8 +124,6 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 * @param money  数量
 	 * @param type   货币类型
-	 *
-	 * @since Money 1.0.0
 	 */
 	@Deprecated
 	boolean setMoney(String player, float money, boolean type);
@@ -156,8 +141,6 @@ public interface MoneyAPI {
 	 *
 	 * @param player 玩家名
 	 * @param money  数量
-	 *
-	 * @since Money 1.0.0
 	 */
 	boolean setMoney(String player, float money);
 
@@ -170,8 +153,6 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 *
 	 * @return float
-	 *
-	 * @since Money 1.0.0
 	 */
 	float getBank(Player player);
 
@@ -186,7 +167,6 @@ public interface MoneyAPI {
 	 *
 	 * @see Money#setBank(String, float)
 	 * @see Money#setBank(Player, float)
-	 * @since Money 1.0.0
 	 */
 	boolean setBank(String player, float money);
 
@@ -231,8 +211,6 @@ public interface MoneyAPI {
 	 *
 	 * @param player 玩家名
 	 * @param amount 数量.
-	 *
-	 * @since Money 2.0.0
 	 */
 	boolean reduceMoney(String player, float amount);
 
@@ -245,8 +223,6 @@ public interface MoneyAPI {
 	 * @param player 玩家名
 	 * @param amount 数量.
 	 * @param type   货币类型. true: 货币2, false: 货币1
-	 *
-	 * @since Money 2.0.0
 	 */
 	boolean reduceMoney(String player, float amount, CurrencyType type);
 
@@ -265,8 +241,6 @@ public interface MoneyAPI {
 	 * @param amount 数量
 	 *
 	 * @return 成功操作的玩家数
-	 *
-	 * @since Money 2.0.0
 	 */
 	int setAllMoney(float amount);
 
@@ -279,8 +253,6 @@ public interface MoneyAPI {
 	 * @param amount 数量
 	 *
 	 * @return 成功操作的玩家数
-	 *
-	 * @since Money 2.0.0
 	 */
 	int addAllMoney(float amount);
 
@@ -293,8 +265,6 @@ public interface MoneyAPI {
 	 * @param amount 数量
 	 *
 	 * @return 成功操作的玩家数
-	 *
-	 * @since Money 2.0.0
 	 */
 	int reduceAllMoney(float amount);
 
@@ -306,8 +276,6 @@ public interface MoneyAPI {
 	 *
 	 * @param player 玩家名
 	 * @param amount 数量
-	 *
-	 * @since Money 2.0.0
 	 */
 	boolean addBank(String player, float amount);
 
@@ -319,8 +287,6 @@ public interface MoneyAPI {
 	 *
 	 * @param player 玩家名
 	 * @param amount 数量
-	 *
-	 * @since Money 2.0.0
 	 */
 	boolean reduceBank(String player, float amount);
 
@@ -333,8 +299,6 @@ public interface MoneyAPI {
 	 * @param amount 余额
 	 *
 	 * @return 成功操作的玩家数
-	 *
-	 * @since Money 2.0.0
 	 */
 	int setAllBank(float amount);
 
@@ -342,8 +306,6 @@ public interface MoneyAPI {
 	 * 获取数据库中记录的所有玩家名字
 	 *
 	 * @return 所有玩家名(可能含有无效名), 可用于遍历等操作
-	 *
-	 * @since Money 2.0.0
 	 */
 	Set<String> getPlayers();
 
@@ -351,8 +313,6 @@ public interface MoneyAPI {
 	 * 获取数据库中记录的所有玩家名字并过滤无效名字
 	 *
 	 * @return 所有玩家名, 可用于遍历等操作
-	 *
-	 * @since Money 2.0.0
 	 */
 	Set<String> getPlayersFiltered();
 }

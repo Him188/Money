@@ -7,7 +7,6 @@ import cn.nukkit.event.HandlerList;
  * 银行余额增加事件.
  *
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class BankIncreaseEvent extends BankEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

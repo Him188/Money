@@ -12,7 +12,6 @@ import money.Money;
  * 需要注意的是, 只有货币 1({@link CurrencyType#FIRST}) 才能存入银行
  *
  * @author Him188 @ Money Project
- * @since Money 1.0.0
  */
 public class BankChangeEvent extends BankEvent implements Cancellable {
 	private String player;

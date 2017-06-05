@@ -10,7 +10,6 @@ import money.Money;
  * 当玩家的货币数量被改动时触发本事件
  *
  * @author Him188 @ Money Project
- * @since Money 1.0.0
  */
 public class MoneyChangeEvent extends MoneyEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

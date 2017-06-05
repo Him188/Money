@@ -10,7 +10,6 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class BankSaveCommand extends MoneyCommand {
 	public BankSaveCommand(String name, Money owner, String[] aliases,

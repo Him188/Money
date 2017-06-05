@@ -8,7 +8,6 @@ import java.util.Set;
  * 银行利息发放事件
  *
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class BankInterestEvent extends BankEvent implements Cancellable {
 	/**

@@ -11,7 +11,6 @@ import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
- * @since Money 2.0.0
  */
 public class WalletInfo1Command extends MoneyCommand {
 	public WalletInfo1Command(String name, Money owner, String[] aliases,
