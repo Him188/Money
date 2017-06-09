@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 2.0.5
+version: 2.0.7
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
