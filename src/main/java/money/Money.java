@@ -769,7 +769,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 		MoneyIncreaseEvent event = new MoneyIncreaseEvent(player, amount, type);
 		getServer().getPluginManager().callEvent(event);
-		return !event.isCancelled() && setMoney(player, getMoney(player) + event.getAmount(), type);
+		return !event.isCancelled() && setMoney(player, getMoney(player,type) + event.getAmount(), type);
 	}
 
 	@Override
@@ -791,7 +791,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 		MoneyDecreaseEvent event = new MoneyDecreaseEvent(player, amount, type);
 		getServer().getPluginManager().callEvent(event);
-		return !event.isCancelled() && setMoney(player, getMoney(player) - event.getAmount(), type);
+		return !event.isCancelled() && setMoney(player, getMoney(player,type) - amount, type);
 	}
 
 	@Override
