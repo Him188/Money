@@ -186,6 +186,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 		save();
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	private void init() {
 		try {
 			initConfig();
@@ -194,7 +195,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 			initCommands();
 
 			/* Register permissions */
-			@SuppressWarnings("SpellCheckingInspection")			final Map<String, String> permissions = new HashMap<String, String>() {
+
+			final Map<String, String> permissions = new HashMap<String, String>() {
 				{
 					put("money.command.bankinfo", "true");
 					put("money.command.banksave", "true");
