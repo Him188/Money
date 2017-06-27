@@ -47,7 +47,7 @@ public class Set1Command extends MoneyCommand {
 		}
 		if (!getPlugin().setMoney(name, to)) {
 			sender.sendMessage(getPlugin().translateMessage("set-failed",
-					"amount", new Long(args[1]),
+					"amount", Float.parseFloat(args[1]),
 					"type", getPlugin().getCurrency1(),
 					"name", name)
 			);
@@ -63,7 +63,7 @@ public class Set1Command extends MoneyCommand {
 		}
 
 		sender.sendMessage(getPlugin().translateMessage("set-success",
-				"amount", new Long(args[1]),
+				"amount", Float.parseFloat(args[1]),
 				"type", getPlugin().getCurrency1(),
 				"name", name));
 		return true;

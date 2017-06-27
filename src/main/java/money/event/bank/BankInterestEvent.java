@@ -16,7 +16,7 @@ public class BankInterestEvent extends BankEvent implements Cancellable {
 	private float interest;
 
 	/**
-	 * 即将利息的玩家列表
+	 * 即将获得利息的玩家列表
 	 */
 	private Set<String> players;
 

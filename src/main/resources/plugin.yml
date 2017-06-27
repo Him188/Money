@@ -98,3 +98,6 @@ updateInfo-2.0.5:
 updateInfo-2.0.6:
 - "2017-06-05 修复 addMoney 和 reduceMoney 忽略事件修改的问题"
 - "2017-06-05 修复 reduceMoney 无法指定货币类型的问题"
+
+updateInfo-2.0.7:
+- "2017-06-27 修复 设置货币1数量时数值过大导致出错的问题"
