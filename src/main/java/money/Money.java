@@ -687,7 +687,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 	@Override
 	public float getMoney(String player) {
-		return getMoney(player, CurrencyType.SECOND);
+		return getMoney(player, CurrencyType.FIRST);
 	}
 
 	@Override

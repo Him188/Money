@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 2.0.7
+version: 2.0.8
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
@@ -101,3 +101,6 @@ updateInfo-2.0.6:
 
 updateInfo-2.0.7:
 - "2017-06-27 修复 设置货币1数量时数值过大导致出错的问题"
+
+updateInfo-2.0.8:
+- "2017-06-29 修复 API问题"
