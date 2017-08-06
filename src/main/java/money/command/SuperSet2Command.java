@@ -13,9 +13,8 @@ import java.util.Map;
  * @author Him188 @ Money Project
  */
 public class SuperSet2Command extends MoneyCommand {
-	public SuperSet2Command(String name, Money owner, String[] aliases,
-	                        Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
+	public SuperSet2Command(String name, Money owner, String[] aliases) {
+		super(name, owner, aliases);
 		this.setPermission("money.command.superset2");
 		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
 			{

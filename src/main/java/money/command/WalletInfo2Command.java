@@ -14,9 +14,8 @@ import java.util.Map;
  * @author Him188 @ Money Project
  */
 public class WalletInfo2Command extends MoneyCommand {
-	public WalletInfo2Command(String name, Money owner, String[] aliases,
-	                          Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
+	public WalletInfo2Command(String name, Money owner, String[] aliases) {
+		super(name, owner, aliases);
 		this.setPermission("money.command.walletinfo2");
 		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
 			{

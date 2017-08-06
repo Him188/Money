@@ -17,9 +17,9 @@ import java.util.Map;
  * @author Him188 @ Money Project
  */
 public class List1Command extends MoneyCommand {
-	public List1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
-		this.setPermission("money.command.list1");
+    public List1Command(String name, Money owner, String[] aliases) {
+        super(name, owner, aliases);
+        this.setPermission("money.command.list1");
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("list-1", new CommandParameter[]{

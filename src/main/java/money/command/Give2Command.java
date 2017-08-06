@@ -16,9 +16,9 @@ import java.util.Objects;
  * @author Him188 @ Money Project
  */
 public class Give2Command extends MoneyCommand {
-	public Give2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
-		this.setPermission("money.command.give2");
+    public Give2Command(String name, Money owner, String[] aliases) {
+        super(name, owner, aliases);
+        this.setPermission("money.command.give2");
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("give-2", new CommandParameter[]{

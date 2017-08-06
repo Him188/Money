@@ -1,10 +1,21 @@
+# 1: Config (Usually used, doesn't need to set 'database-server-settings' values)
+# 2: Redis (Redis database, needs to set 'database-server-settings' values)
+# 3: MySQL (Doesn't support now)
+# Default: 1
 database-type: 1
 
+# When you set 'database-type' to any type of database(like Redis and MySQL), you need to set this setting
 database-server-settings:
+  # Database server host name. It can be an ip address also a domain name
   host: "localhost"
+  # Database server port name. For Redis, it usually was '6379'. For MySQL, '3306' is the default
   port: 0
+  # Database server user name. For Redis, it usually was 'null'(empty string). For MySQL, 'root' is the default
   user: ""
+  # Database server user password. For Redis, it defaults 'null'(empty string).
   password: ""
+  # Database id. For Redis, it means which database will be used by Money plugin(because Redis can have multi databases).
+  # For MySQL, it represents database name
   id: 0
 
 # Whether to use the multi thread to handle command (i.e. when using a command, server will not be abnormal. But may be due to a database query causes (1 ~ 5 seconds) delay.

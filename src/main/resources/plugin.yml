@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 2.0.8
+version: 2.0.9
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
@@ -104,3 +104,6 @@ updateInfo-2.0.7:
 
 updateInfo-2.0.8:
 - "2017-06-29 修复 API问题"
+
+updateInfo-2.1.0:
+- "2017-08-07 适配 MoeDB 2.0.0"

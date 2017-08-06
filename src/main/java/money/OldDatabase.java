@@ -1,40 +1,37 @@
 package money;
 
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 
+import java.io.File;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 该类仅用于旧数据转换为新数据. 新数据使用到 {@code MoeDB} 的 {@link net.mamoe.moedb.db.KeyValueDatabase}
+ * 该类仅用于旧数据转换为新数据. 新数据使用到 {@code MoeDB} 的 {@link net.mamoe.moedb.Database}
  */
 class OldDatabase {
-	private Map<String, Map<String, String>> data;
+    enum Keys {
+        STRINGS,
+        MAPS,
+        LISTS
+    }
 
-	OldDatabase() {
-	}
+    private EnumMap<Keys, ConfigSection> data;
 
-	boolean loadFile(String file) {
-		Map<String, Object> config = (new Config(file, Config.YAML)).getAll();
-		data = new HashMap<>();
-		config.entrySet().stream().filter(entry -> entry.getValue() != null).forEach(entry -> {
-			if (entry.getValue() instanceof HashMap) {
-				try {
-					//noinspection unchecked
-					data.put(entry.getKey(), (HashMap<String, String>) entry.getValue());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				config.remove(entry.getKey());
-			}
+    OldDatabase() {
+    }
 
-		});
+    void loadFile(File file) {
+        Config config = new Config(file, Config.YAML);
+        data = new EnumMap<>(Keys.class);
+        data.put(Keys.STRINGS, config.getSection("strings"));
+        data.put(Keys.MAPS, config.getSection("maps"));
+        data.put(Keys.LISTS, config.getSection("lists"));
+    }
 
-		return true;
-	}
-
-	Map<String, Map<String, String>> getData() {
-		return data;
-	}
+    EnumMap<Keys, ConfigSection> getData() {
+        return data;
+    }
 }

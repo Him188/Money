@@ -14,9 +14,8 @@ import java.util.Map;
  * @author Him188 @ Money Project
  */
 public class GiveOnline2Command extends MoneyCommand {
-	public GiveOnline2Command(String name, Money owner, String[] aliases,
-	                          Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
+	public GiveOnline2Command(String name, Money owner, String[] aliases) {
+		super(name, owner, aliases);
 		this.setPermission("money.command.giveonline2");
 		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
 			{

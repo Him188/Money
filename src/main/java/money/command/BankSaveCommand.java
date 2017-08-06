@@ -13,9 +13,8 @@ import java.util.Map;
  * @author Him188 @ Money Project
  */
 public class BankSaveCommand extends MoneyCommand {
-	public BankSaveCommand(String name, Money owner, String[] aliases,
-	                       Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
+	public BankSaveCommand(String name, Money owner, String[] aliases) {
+		super(name, owner, aliases);
 		this.setPermission("money.command.banksave");
 		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
 			{

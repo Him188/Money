@@ -16,8 +16,8 @@ import java.util.Objects;
  * @author Him188 @ Money Project
  */
 public class Set2Command extends MoneyCommand {
-	public Set2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
-		super(name, owner, aliases, commandParameters);
+	public Set2Command(String name, Money owner, String[] aliases) {
+		super(name, owner, aliases);
 		this.setPermission("money.command.set2");
 		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
 			{

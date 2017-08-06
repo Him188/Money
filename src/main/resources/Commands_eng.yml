@@ -4,71 +4,81 @@
 #########################
 
 
-#Disable a command by adding "#" to the front of a command line. For example:
-#wallet-info-1: "coin"
+# Disable a command by adding "#" to the front of a command line. For example:
+# wallet-info-1: "coin"
 
 #########################################
 #########################################
 #########################################
 
-#Please DO NOT modify it
+# Please DO NOT modify it
 type: "eng"
 
-#Please DO NOT modify it
-version: "4"
+# Please DO NOT modify it
+version: "5"
 
 
 
-#Players get their first currency information (No parameters)
+# Players get their first currency information (No parameters)
 wallet-info-1: "coin"
 
-#Players get their second currency information (No parameters)
+# Players get their second currency information (No parameters)
 wallet-info-2: "point"
 
-#Players get their bank account information (No parameters)
+# Players get their bank account information (No parameters)
 bank-info: "bank"
 
-#Save money (Parameter: <amount>)
+# Save money (Parameter: <amount>)
 bank-save: "savebank"
 
-#Take money (Parameter: <amount>)
+# Take money (Parameter: <amount>)
 bank-take: "takebank"
 
-#Pay to the other player a number of the first currency( Reduce the number of negative numbers) (Parameters: <player> <amount>)
+# Pay to the other player a number of the first currency( Reduce the number of negative numbers) (Parameters: <player> <amount>)
 pay-1: "paycoin"
 
-#Pay to the other player a number of the second currency( Reduce the number of negative numbers) (Parameters: <player> <amount>)
+# Pay to the other player a number of the second currency( Reduce the number of negative numbers) (Parameters: <player> <amount>)
 pay-2: "paypoint"
 
-#OP gives to the other player a number of the first currency( Reduce the number of negative numbers) (Parameters: <player> <amount>)
+# OP gives to the other player a number of the first currency( Reduce the number of negative numbers) (Parameters: <player> <amount>)
 give-1: "givecoin"
 
-#OP gives to the other player a number of the second currency( Reduce the number of negative numbers) (Parameters: <player> <amount>))
+# OP gives to the other player a number of the second currency( Reduce the number of negative numbers) (Parameters: <player> <amount>))
 give-2: "givepoint"
 
 
-#Modify the first currency of a player (Parameters: <player> <amount>)
+# Modify the first currency of a player (Parameters: <player> <amount>)
 set-1: "setcoin"
 
-#Modify the second currency of a player (Parameters: <player> <amount>)
+# Modify the second currency of a player (Parameters: <player> <amount>)
 set-2: "setpoint"
 
-#Modify the first currency of all players who joined server (no matter whether they are online) (Parameters: <amount>)
+# Modify the first currency of all players who joined server (no matter whether they are online) (Parameters: <amount>)
 super-set-1: "supersetcoin"
 
-#Modify the second currency of all players who joined server (no matter whether they are online) (Parameters: <amount>)
+# Modify the second currency of all players who joined server (no matter whether they are online) (Parameters: <amount>)
 super-set-2: "supersetpoint"
 
 
-#View list of the first currency, 6 rows/page (Parameters: [page])
+# View list of the first currency, 6 rows/page (Parameters: [page])
 coin-list: "coinlist"
 
-#View list of the second currency, 6 rows/page (Parameters: [page])
+# View list of the second currency, 6 rows/page (Parameters: [page])
 coin-list: "pointlist"
 
 
-#Give all online player some the first currency (Parameters: <amount>)
+# Give all online player some the first currency (Parameters: <amount>)
 give-online-1: "giveonlinecoin"
 
-#Give all online player some the second currency (Parameters: <amount>)
+# Give all online player some the second currency (Parameters: <amount>)
 give-online-2: "giveonlinepoint"
+
+
+# Gets how many the first currency player have (Parameters: <player>)
+see-money-1: "seecoin"
+
+# Gets how many the second currency player have (Parameters: <player>)
+see-money-2: "seepoint"
+
+# Gets how many bank balance player have (Parameters: <player>)
+see-bank: "seebank"
