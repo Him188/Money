@@ -8,7 +8,6 @@ import money.Money;
 import money.Utils;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,8 +56,8 @@ public class Give1Command extends MoneyCommand {
 
 		if (!getPlugin().addMoney(name, to)) {
 			sender.sendMessage(getPlugin().translateMessage("give-failed",
-					"amount", Float.parseFloat(args[1]),
-					"type", getPlugin().getCurrency1(),
+                    "amount", to,
+                    "type", getPlugin().getCurrency1(),
 					"name", name));
 
 			return true;
@@ -67,13 +66,13 @@ public class Give1Command extends MoneyCommand {
 		if (p != null) {
 			p.sendMessage(getPlugin().translateMessage("give-done",
 					"name", sender.getName(),
-					"amount", Long.parseLong(args[1]),
-					"type", getPlugin().getCurrency1()));
+                    "amount", to,
+                    "type", getPlugin().getCurrency1()));
 		}
 
 		sender.sendMessage(getPlugin().translateMessage("give-success",
-				"amount", Float.parseFloat(args[1]),
-				"type", getPlugin().getCurrency1(),
+                "amount", to,
+                "type", getPlugin().getCurrency1(),
 				"name", name));
 		return true;
 	}

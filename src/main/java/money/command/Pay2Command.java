@@ -8,7 +8,6 @@ import money.Money;
 import money.Utils;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -56,7 +55,7 @@ public class Pay2Command extends MoneyCommand {
 		}
 		if (money - to < Float.parseFloat(getPlugin().getConfig().get("pay-2-limit").toString())) {
 			sender.sendMessage(this.getPlugin().translateMessage("pay-can-not-less-than-initiation",
-					"limit", (Float.parseFloat(getPlugin().getConfig().get("pay-2-limit").toString())),
+					"amount", (Float.parseFloat(getPlugin().getConfig().get("pay-2-limit").toString())),
 					"type", getPlugin().getCurrency2()));
 			return true;
 		}

@@ -53,7 +53,7 @@ public class SeeBankCommand extends MoneyCommand {
 
         sender.sendMessage(this.getPlugin().translateMessage("see-bank-success",
                 "player", name,
-                "amount", Money.getInstance().getMoney(name)
+                "amount", Money.getInstance().getBank(name)
         ));
         return false;
     }

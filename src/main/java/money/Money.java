@@ -2,7 +2,6 @@ package money;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.command.CommandExecutor;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
@@ -46,6 +45,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
      */
     AbstractDatabase db = null;
     private Map<String, String> commands = new HashMap<>();
+    private MoneyEventListener listener;
 
     private final static String nowCommandVersion = "5";
     private final static String nowLanguageVersion = "7";
@@ -97,7 +97,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         return instance;
     }
 
-    {
+    public Money() {
+        super();
         instance = this;
     }
 
@@ -256,7 +257,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
             if (getConfig().getString("database-type", "1").equals("1") && getConfig().getInt("database-save-tick", 2400) != 0) {
                 Server.getInstance().getScheduler()
-                        .scheduleDelayedTask(this, this::save, getConfig().getInt("database-save-tick", 2400));
+                        .scheduleRepeatingTask(this, this::save, getConfig().getInt("database-save-tick", 2400));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -325,7 +326,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
     public void save() {
         if (db instanceof HashDatabase) {
-            Config config = new Config(new File(getDataFolder(), "Data.yml"));
+            Config config = new Config(new File(getDataFolder(), "data.dat"), Config.YAML);
             config.setAll(db);
             config.save();
         }
@@ -367,13 +368,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                 if (db.keySet().size() == 0 && oldFile.exists()) {
                     convertDatabase(oldFile);
                     save();
-                    if (oldFile.renameTo(new File(getDataFolder(), "Data.yml.bak"))) {
-                        getLogger().notice("数据转换成功! 旧文件已经被重命名为 \"Data.yml.bak\", 你可以删除该文件, 或是将其作为一个备份.");
+                    if (oldFile.renameTo(new File(getDataFolder(), "db.dat.bak"))) {
+                        getLogger().notice("数据转换成功! 旧文件已经被重命名为 \"db.dat.bak\", 你可以删除该文件, 或是将其作为一个备份.");
                         getLogger().notice("Data file converting success! The old data file is renamed as " +
-                                           "\"Data.yml.bak\", you can delete that file, or make it as a backup.");
+                                           "\"db.dat.bak\", you can delete that file, or make it as a backup.");
                     } else {
-                        getLogger().notice("数据转换成功, 但重命名旧文件 \"Data.yml\" 为 \"Data.yml.bak\" 失败, 请手动重命名将其作为一个备份或删除");
-                        getLogger().notice("Data file converting success! But renaming old file \"Data.yml\" to \"Data.yml.bak\" failed. " +
+                        getLogger().notice("数据转换成功, 但重命名旧文件 \"db.dat\" 为 \"db.dat.bak\" 失败, 请手动重命名将其作为一个备份或删除");
+                        getLogger().notice("Data file converting success! But renaming old file \"db.dat\" to \"db.dat.bak\" failed. " +
                                            "Please rename it manually to make it as a backup or delete it.");
                     }
 
@@ -403,7 +404,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
             default:
                 getLogger().critical("目前仅支持 Config 和 Redis 数据库");
                 getLogger().critical("Now this plugin only support Config and Redis database");
-                Server.getInstance().shutdown();
+                Server.getInstance().forceShutdown();
         }
     }
 
@@ -577,6 +578,9 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     @Override
     public float getMoney(String player, CurrencyType type) {
         AbstractDatabase child = db.getChildDatabase(player);
+        if (child == null) {
+            return 0F;
+        }
         if (type == CurrencyType.FIRST) {
             return child.getFloat("money1", 0F);
         } else {
@@ -630,12 +634,16 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         Server.getInstance().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             AbstractDatabase data = db.getChildDatabase(player);
+            if (data == null) {
+                data = new HashDatabase();
+            }
             if (type == CurrencyType.FIRST) {
                 data.put("money1", event.getTarget());
             } else {
                 data.put("money2", event.getTarget());
             }
             db.put(player, data);
+            return true;
         }
 
         return false;
@@ -741,7 +749,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
     @Override
     public float getBank(String player) {
-        return db.getChildDatabase(player).getFloat("bank", 0);
+        AbstractDatabase data = db.getChildDatabase(player);
+        return data == null ? 0F : data.getFloat("bank", 0F);
     }
 
     @Override
@@ -757,6 +766,9 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
             return false;
         }
         AbstractDatabase data = db.getChildDatabase(player);
+        if (data == null) {
+            data = new HashDatabase();
+        }
         data.put("bank", event.getTarget());
         db.put(player, data);
         return true;

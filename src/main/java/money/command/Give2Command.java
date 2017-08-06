@@ -9,7 +9,6 @@ import money.Money;
 import money.Utils;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -59,8 +58,8 @@ public class Give2Command extends MoneyCommand {
 
 		if (!getPlugin().addMoney(name, to, CurrencyType.SECOND)) {
 			sender.sendMessage(getPlugin().translateMessage("give-failed",
-					"amount", Float.parseFloat(args[1]),
-					"type", getPlugin().getCurrency2(),
+                    "amount", to,
+                    "type", getPlugin().getCurrency2(),
 					"name", name));
 			return true;
 		}
@@ -68,12 +67,12 @@ public class Give2Command extends MoneyCommand {
 		if (p != null) {
 			p.sendMessage(getPlugin().translateMessage("give-done",
 					"name", sender.getName(),
-					"amount", Long.parseLong(args[1]),
-					"type", getPlugin().getCurrency2()));
+                    "amount", to,
+                    "type", getPlugin().getCurrency2()));
 		}
 		sender.sendMessage(getPlugin().translateMessage("give-success",
-				"amount", Float.parseFloat(args[1]),
-				"type", getPlugin().getCurrency2(),
+                "amount", to,
+                "type", getPlugin().getCurrency2(),
 				"name", name));
 		return true;
 	}

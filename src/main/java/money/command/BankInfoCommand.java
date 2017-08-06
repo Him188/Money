@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import money.Money;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
@@ -18,8 +17,7 @@ public class BankInfoCommand extends MoneyCommand {
         this.setPermission("money.command.bankinfo");
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
-                put("bank-save", new CommandParameter[]{
-                        new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+                put("bank-info", new CommandParameter[]{
                 });
             }
         });
@@ -35,7 +33,10 @@ public class BankInfoCommand extends MoneyCommand {
             sender.sendMessage(this.getPlugin().translateMessage("use-in-game"));
             return true;
         }
-        sender.sendMessage(this.getPlugin().translateMessage("your-bank", "amount", getPlugin().getBank((Player) sender)));
+        sender.sendMessage(this.getPlugin().translateMessage("your-bank",
+                "amount", getPlugin().getBank((Player) sender),
+                "type", getPlugin().getCurrency1()
+        ));
         return true;
     }
 }

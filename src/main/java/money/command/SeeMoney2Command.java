@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
+import money.CurrencyType;
 import money.Money;
 import money.Utils;
 
@@ -53,7 +54,7 @@ public class SeeMoney2Command extends MoneyCommand {
 
         sender.sendMessage(this.getPlugin().translateMessage("see-money-success",
                 "player", name,
-                "amount", Money.getInstance().getMoney(name),
+                "amount", Money.getInstance().getMoney(name, CurrencyType.SECOND),
                 "type", Money.getInstance().getCurrency2()
         ));
         return false;

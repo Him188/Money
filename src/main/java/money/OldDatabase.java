@@ -5,11 +5,9 @@ import cn.nukkit.utils.ConfigSection;
 
 import java.io.File;
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * 该类仅用于旧数据转换为新数据. 新数据使用到 {@code MoeDB} 的 {@link net.mamoe.moedb.Database}
+ * 该类仅用于旧数据转换为新数据. 新数据使用到 {@code MoeDB} 的 {@link net.mamoe.moedb.AbstractDatabase}
  */
 class OldDatabase {
     enum Keys {
