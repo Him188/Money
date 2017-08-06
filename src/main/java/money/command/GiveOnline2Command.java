@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import money.CurrencyType;
 import money.Money;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,6 +18,13 @@ public class GiveOnline2Command extends MoneyCommand {
 	                          Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 		this.setPermission("money.command.giveonline2");
+		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
+			{
+				put("give-online-2", new CommandParameter[]{
+						new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+				});
+			}
+		});
 	}
 
 	@Override

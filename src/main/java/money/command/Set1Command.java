@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import money.Money;
 import money.Utils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,6 +18,14 @@ public class Set1Command extends MoneyCommand {
 	public Set1Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 		this.setPermission("money.command.set1");
+		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
+			{
+				put("set-1", new CommandParameter[]{
+						new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
+						new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+				});
+			}
+		});
 	}
 
 	@Override

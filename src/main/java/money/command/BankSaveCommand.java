@@ -6,6 +6,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import money.Money;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,6 +17,13 @@ public class BankSaveCommand extends MoneyCommand {
 	                       Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 		this.setPermission("money.command.banksave");
+		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
+			{
+				put("bank-info", new CommandParameter[]{
+
+				});
+			}
+		});
 	}
 
 	@Override

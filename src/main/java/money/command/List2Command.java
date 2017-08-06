@@ -9,6 +9,7 @@ import cn.nukkit.utils.TextFormat;
 import money.Money;
 import money.Utils;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,6 +20,13 @@ public class List2Command extends MoneyCommand {
 	public List2Command(String name, Money owner, String[] aliases, Map<String, CommandParameter[]> commandParameters) {
 		super(name, owner, aliases, commandParameters);
 		this.setPermission("money.command.list2");
+		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
+			{
+				put("list-1", new CommandParameter[]{
+						new CommandParameter("page", CommandParameter.ARG_TYPE_INT, true)
+				});
+			}
+		});
 	}
 
 	@Override
