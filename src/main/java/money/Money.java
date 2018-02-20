@@ -220,7 +220,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                     put("money.command.set1", "op");
                     put("money.command.set2", "op");
                     put("money.command.superset1", "op");
-                    put("money.command.superset1", "op");
+                    put("money.command.superset2", "op");
                     put("money.command.see1", "op");
                     put("money.command.see2", "op");
                     put("money.command.seebank", "op");
@@ -468,8 +468,8 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
     @SuppressWarnings("unchecked")
-    public LinkedHashMap<String, LinkedHashMap<String, String>> getDataMap() {
-        LinkedHashMap<String, LinkedHashMap<String, String>> result = new LinkedHashMap<>();
+    public LinkedHashMap<String, Map<String, String>> getDataMap() {
+        LinkedHashMap<String, Map<String, String>> result = new LinkedHashMap<>();
 
         for (String s : db.keySet()) {
             result.put(s, new LinkedHashMap<String, String>() {
@@ -858,7 +858,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
     @Override
     public boolean reduceBank(final Player player, final float amount) {
-        return reduceMoney(player.getName(), amount);
+        return reduceBank(player.getName(), amount);
     }
 
 

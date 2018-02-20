@@ -24,7 +24,8 @@ public interface MoneyAPI {
 
 
     /**
-     * 获取第一种货币 String 值
+     * 获取第一种货币 String 值 <br>
+     * Get config value of the first currency unit, like "Coin"
      *
      * @return String
      */
@@ -38,7 +39,8 @@ public interface MoneyAPI {
 
 
     /**
-     * 获取第二种货币 String 值
+     * 获取第二种货币 String 值 <br>
+     * Get config value of the first currency unit, like "Point"
      *
      * @return String
      */
@@ -51,11 +53,14 @@ public interface MoneyAPI {
     String getCurrency2();
 
     /**
-     * 获取第一/二种货币 String 值
+     * 获取第一/二种货币 String 值 <br>
+     * Get config value of the first/second currency unit, like "Coin"/"Point"
      *
-     * @param type 类型
+     * @param type 类型 <br>
+     *             type
      *
-     * @return 第一/二种货币 String 值
+     * @return 第一/二种货币 String 值 <br>
+     * config value of the first/second currency unit
      */
     String getCurrency(CurrencyType type);
 
@@ -73,7 +78,8 @@ public interface MoneyAPI {
 
 
     /**
-     * 检查第二种货币是否已开启
+     * 检查第二种货币是否已开启 <br>
+     * Check if the second currency is enabled
      *
      * @return boolean
      *
@@ -86,10 +92,13 @@ public interface MoneyAPI {
 
 
     /**
-     * 获取一个玩家的货币数量. 如果玩家不存在, 将返回 0
+     * 获取一个玩家的货币数量. 如果玩家不存在, 将返回 0 <br>
+     * Get one's currency1 amount. If <code>player</code> is valid, it returns 0.
      *
-     * @param player 玩家名
-     * @param type   货币类型. true: 货币2, false: 货币1
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param type   货币类型. true: 货币2, false: 货币1 <br>
+     *               currency type
      *
      * @return float
      */
@@ -105,7 +114,8 @@ public interface MoneyAPI {
 
 
     /**
-     * 获取一个玩家的货币1数量. 如果玩家不存在, 将返回 0
+     * 获取一个玩家的货币1数量. 如果玩家不存在, 将返回 0 <br>
+     * Get one's currency1 amount. If <code>player</code> is invalid, it returns 0.
      *
      * @param player 玩家名
      *
@@ -117,11 +127,15 @@ public interface MoneyAPI {
 
 
     /**
-     * 设置一个玩家的货币数量. 会触发 {@link MoneyChangeEvent}
+     * 设置一个玩家的货币数量. 会触发 {@link MoneyChangeEvent} <br>
+     * Modify one's currency amount. It will trigger {@link MoneyChangeEvent}
      *
-     * @param player 玩家名
-     * @param money  数量
-     * @param type   货币类型
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param money  数量 <br>
+     *               amount
+     * @param type   货币类型 <br>
+     *               currency type
      */
     @Deprecated
     boolean setMoney(String player, float money, boolean type);
@@ -135,10 +149,11 @@ public interface MoneyAPI {
 
 
     /**
-     * 设置一个玩家的货币1 数量. 会触发 {@link MoneyChangeEvent}
+     * 设置一个玩家的货币1 数量. 会触发 {@link MoneyChangeEvent} <br>
+     * Modify one's currency1 amount. It will trigger {@link MoneyChangeEvent}
      *
-     * @param player 玩家名
-     * @param money  数量
+     * @param player 玩家名 <br> player's name
+     * @param money  数量 <br> amount
      */
     boolean setMoney(String player, float money);
 
@@ -146,9 +161,11 @@ public interface MoneyAPI {
 
 
     /**
-     * 获取一个玩家的银行储蓄. 如果玩家不存在, 将返回 0
+     * 获取一个玩家的银行储蓄. 如果玩家不存在, 将返回 0 <br>
+     * Get one's bank account balance. If <code>player</code> is invalid, it returns 0
      *
-     * @param player 玩家名
+     * @param player 玩家名 <br>
+     *               player's name
      *
      * @return float
      */
@@ -158,10 +175,13 @@ public interface MoneyAPI {
 
 
     /**
-     * 设置一个玩家的银行储蓄. 会触发 {@link BankChangeEvent}
+     * 设置一个玩家的银行储蓄. 会触发 {@link BankChangeEvent} <br>
+     * Modify one's bank account balance. It will trigger {@link BankChangeEvent}
      *
-     * @param player 玩家名
-     * @param money  数量
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param money  数量 <br>
+     *               amount
      *
      * @see Money#setBank(String, float)
      * @see Money#setBank(Player, float)
@@ -173,9 +193,12 @@ public interface MoneyAPI {
 
     /**
      * 增加一个玩家的货币1数量. 会触发 {@link MoneyIncreaseEvent} 随后触发 {@link MoneyChangeEvent}
+     * Increase one's currency1 amount. It will trigger {@link MoneyIncreaseEvent} and {@link MoneyChangeEvent}
      *
-     * @param player 玩家名
-     * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, float)})
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, float)}) <br>
+     *               amount. Can be negative. When it is negative, this method will call {@link #reduceMoney(Player, float)}
      *
      * @since Money 1.3.0
      */
@@ -185,11 +208,15 @@ public interface MoneyAPI {
 
 
     /**
-     * 增加一个玩家的货币数量. 会触发 {@link MoneyIncreaseEvent} 随后触发 {@link MoneyChangeEvent}
+     * 增加一个玩家的货币数量. 会触发 {@link MoneyIncreaseEvent} 随后触发 {@link MoneyChangeEvent} <br>
+     * Increase one's currency amount. It will trigger {@link MoneyIncreaseEvent} and {@link MoneyChangeEvent}
      *
-     * @param player 玩家名
-     * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, float, CurrencyType)})
-     * @param type   货币类型. true: 货币2, false: 货币1
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param amount 数量. 可以负数 (负数时会调用 {@link #reduceMoney(Player, float, CurrencyType)}) <br>
+     *               amount. Can be negative. When it is negative, this method will call {@link #reduceMoney(Player, float)}
+     * @param type   货币类型. true: 货币2, false: 货币1 <br>
+     *               currency type. In old api, true represents {@link CurrencyType#SECOND}, false represents {@link CurrencyType#FIRST}
      *
      * @since Money 1.3.0
      */
@@ -206,9 +233,12 @@ public interface MoneyAPI {
 
     /**
      * 减少一个玩家的货币1数量. 会触发 {@link MoneyDecreaseEvent} 随后触发 {@link MoneyChangeEvent}
+     * Decrease one's currency1 amount. It will trigger {@link MoneyIncreaseEvent} and {@link MoneyChangeEvent}
      *
-     * @param player 玩家名
-     * @param amount 数量.
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param amount 数量. 可以负数 (负数时会调用 {@link #addMoney(Player, float)}) <br>
+     *               amount. Can be negative. When it is negative, this method will call {@link #addMoney(Player, float)}
      */
     boolean reduceMoney(String player, float amount);
 
@@ -217,10 +247,14 @@ public interface MoneyAPI {
 
     /**
      * 减少一个玩家的货币数量. 会触发 {@link MoneyDecreaseEvent} 随后触发 {@link MoneyChangeEvent}
+     * Decrease one's currency amount. It will trigger {@link MoneyIncreaseEvent} and {@link MoneyChangeEvent}
      *
-     * @param player 玩家名
-     * @param amount 数量.
-     * @param type   货币类型. true: 货币2, false: 货币1
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param amount 数量. 可以负数 (负数时会调用 {@link #addMoney(Player, float, CurrencyType)}) <br>
+     *               amount. Can be negative. When it is negative, this method will call {@link #addMoney(Player, float, CurrencyType)}
+     * @param type   货币类型. true: 货币2, false: 货币1 <br>
+     *               currency type. In old api, true represents {@link CurrencyType#SECOND}, false represents {@link CurrencyType#FIRST}
      */
     boolean reduceMoney(String player, float amount, CurrencyType type);
 
@@ -235,10 +269,13 @@ public interface MoneyAPI {
 
     /**
      * 设置全服玩家(数据库中所有已记录的玩家)的货币数量. 会触发 {@link MoneyChangeEvent}
+     * Modify all players' currency amount. It will trigger {@link MoneyChangeEvent}
      *
-     * @param amount 数量
+     * @param amount 数量 <br>
+     *               amount
      *
-     * @return 成功操作的玩家数
+     * @return 成功操作的玩家数 <br>
+     * number of successful operations
      */
     int setAllMoney(float amount);
 
@@ -247,10 +284,13 @@ public interface MoneyAPI {
 
     /**
      * 设置全服玩家(数据库中所有已记录的玩家)的货币数量. 会触发 {@link MoneyIncreaseEvent} {@link MoneyChangeEvent}
+     * Increase all players' currency amount. It will trigger {@link MoneyIncreaseEvent} and {@link MoneyChangeEvent}
      *
-     * @param amount 数量
+     * @param amount 数量 <br>
+     *               amount
      *
-     * @return 成功操作的玩家数
+     * @return 成功操作的玩家数 <br>
+     * number of successful operations
      */
     int addAllMoney(float amount);
 
@@ -259,10 +299,13 @@ public interface MoneyAPI {
 
     /**
      * 设置全服玩家(数据库中所有已记录的玩家)的货币数量. 会触发 {@link MoneyIncreaseEvent} {@link MoneyChangeEvent}
+     * Decrease all players' currency amount. It will trigger {@link MoneyIncreaseEvent} and {@link MoneyChangeEvent}
      *
-     * @param amount 数量
+     * @param amount 数量 <br>
+     *               amount
      *
-     * @return 成功操作的玩家数
+     * @return 成功操作的玩家数 <br>
+     * number of successful operations
      */
     int reduceAllMoney(float amount);
 
@@ -271,9 +314,12 @@ public interface MoneyAPI {
 
     /**
      * 增加一个玩家的银行储蓄. 会触发 {@link BankIncreaseEvent} 随后触发 {@link BankChangeEvent}
+     * Increase one's bank account balance. It will trigger {@link BankIncreaseEvent} and {@link BankChangeEvent}
      *
-     * @param player 玩家名
-     * @param amount 数量
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param amount 数量 <br>
+     *               amount
      */
     boolean addBank(String player, float amount);
 
@@ -282,9 +328,12 @@ public interface MoneyAPI {
 
     /**
      * 减少一个玩家的银行储蓄. 会触发 {@link BankDecreaseEvent} 随后触发 {@link BankChangeEvent}
+     * Decrease one's bank account balance. It will trigger {@link BankDecreaseEvent} and {@link BankChangeEvent}
      *
-     * @param player 玩家名
-     * @param amount 数量
+     * @param player 玩家名 <br>
+     *               player's name
+     * @param amount 数量 <br>
+     *               amount
      */
     boolean reduceBank(String player, float amount);
 
@@ -293,10 +342,13 @@ public interface MoneyAPI {
 
     /**
      * 设置全服玩家(数据库中所有已记录的玩家)的银行余额. 会触发 {@link BankChangeEvent}
+     * Modify all players' bank account balance. It will trigger {@link BankChangeEvent}
      *
-     * @param amount 余额
+     * @param amount 余额 <br>
+     *               amount
      *
-     * @return 成功操作的玩家数
+     * @return 成功操作的玩家数 <br>
+     * number of successful operations
      */
     int setAllBank(float amount);
 }

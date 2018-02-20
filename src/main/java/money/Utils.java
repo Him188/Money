@@ -21,7 +21,7 @@ public final class Utils {
 		return Server.getInstance().getPlayer(name);
 	}
 
-	public static LinkedHashMap<String, String> sortMap(LinkedHashMap<String, LinkedHashMap<String, String>> data, String key) {
+    public static Map<String, String> sortMap(Map<String, Map<String, String>> data, String key) {
 		HashMap<String, String> map = new HashMap<>();
 		data.forEach((k, value) -> {
 			if (k == null) {

@@ -10,7 +10,6 @@ import money.Money;
 import money.Utils;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -40,7 +39,7 @@ public class List1Command extends MoneyCommand {
 			@SuppressWarnings("Duplicates")
 			@Override
 			public void onRun() {
-				LinkedHashMap<String, String> linkedHashMap = Utils.sortMap(getPlugin().getDataMap(), "money1");
+                Map<String, String> linkedHashMap = Utils.sortMap(getPlugin().getDataMap(), "money1");
 
 				int pages = linkedHashMap.size() / 6;
 
