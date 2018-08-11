@@ -1,13 +1,12 @@
 package money.command;
 
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import money.CurrencyType;
 import money.Money;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
@@ -19,16 +18,16 @@ public class SuperSet1Command extends MoneyCommand {
 		this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
 			{
 				put("super-set-1", new CommandParameter[]{
-						new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+						new CommandParameter("amount", CommandParamType.INT, false)
 				});
 			}
 		});
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!this.testPermission(sender)) {
-			//sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
+	public boolean execute(CommandSender sender, String label, String[] args) {
+		if (!this.testPermissionSilent(sender)) {
+			sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
 			return true;
 		}
 

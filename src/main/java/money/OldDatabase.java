@@ -2,12 +2,16 @@ package money;
 
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
+import net.mamoe.moedb.AbstractDatabase;
 
 import java.io.File;
 import java.util.EnumMap;
 
 /**
  * 该类仅用于旧数据转换为新数据. 新数据使用到 {@code MoeDB} 的 {@link net.mamoe.moedb.AbstractDatabase}
+ * Only used to convert old data to new one. See {@link AbstractDatabase}
+ *
+ * @author Him188 @ Money Project
  */
 class OldDatabase {
     enum Keys {

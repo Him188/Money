@@ -1,7 +1,6 @@
 package money;
 
 import cn.nukkit.IPlayer;
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 
 import java.util.*;
@@ -10,16 +9,6 @@ import java.util.*;
  * @author Him188 @ Money Project
  */
 public final class Utils {
-	public static Player getPlayer(String name) {
-		Player player;
-
-		player = Server.getInstance().getPlayerExact(name);
-		if (player != null) {
-			return player;
-		}
-
-		return Server.getInstance().getPlayer(name);
-	}
 
     public static Map<String, String> sortMap(Map<String, Map<String, String>> data, String key) {
 		HashMap<String, String> map = new HashMap<>();

@@ -7,7 +7,7 @@ package money;
  * <br/>
  * Currency type
  * The way to get String value: {@link MoneyAPI#getCurrency(CurrencyType)}
- * The enum is overridden {@link Object#toString()}, This method will return the value in "Config.yml" like "Coin"
+ * The enum override {@link Object#toString()}, This method will return the value in "Config.yml" like "Coin"
  *
  * @author Him188 @ Money Project
  */

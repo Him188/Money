@@ -1,11 +1,11 @@
 package money.command;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import money.Money;
-import money.Utils;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -20,16 +20,16 @@ public class SeeMoney1Command extends MoneyCommand {
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("see-money-1", new CommandParameter[]{
-                        new CommandParameter("player", CommandParameter.ARG_TYPE_RAW_TEXT, false)
+                        new CommandParameter("player", CommandParamType.RAWTEXT, false)
                 });
             }
         });
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!this.testPermission(sender)) {
-            //sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
+    public boolean execute(CommandSender sender, String label, String[] args) {
+        if (!this.testPermissionSilent(sender)) {
+            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
             return true;
         }
 
@@ -38,7 +38,7 @@ public class SeeMoney1Command extends MoneyCommand {
             return true;
         }
 
-        Player p = Utils.getPlayer(args[0]);
+        Player p = Server.getInstance().getPlayer(args[0]);
         String name;
         if (p == null) {
             name = args[0];

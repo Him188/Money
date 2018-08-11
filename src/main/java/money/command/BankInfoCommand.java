@@ -1,7 +1,6 @@
 package money.command;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import money.Money;
@@ -24,9 +23,9 @@ public class BankInfoCommand extends MoneyCommand {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!this.testPermission(sender)) {
-            //sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
+    public boolean execute(CommandSender sender, String label, String[] args) {
+        if (!this.testPermissionSilent(sender)) {
+            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
             return true;
         }
         if (!(sender instanceof Player)) {

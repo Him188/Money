@@ -1,11 +1,11 @@
 package money.command;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import money.Money;
-import money.Utils;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -20,60 +20,60 @@ public class Give1Command extends MoneyCommand {
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("give-1", new CommandParameter[]{
-                        new CommandParameter("player", CommandParameter.ARG_TYPE_STRING, false),
-                        new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, false)
+                        new CommandParameter("player", CommandParamType.STRING, false),
+                        new CommandParameter("amount", CommandParamType.INT, false)
                 });
             }
         });
     }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!this.testPermission(sender)) {
-			//sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
-			return true;
-		}
+    @Override
+    public boolean execute(CommandSender sender, String label, String[] args) {
+        if (!this.testPermissionSilent(sender)) {
+            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
+            return true;
+        }
 
-		if (args.length < 2) {
-			sender.sendMessage(this.getPlugin().translateMessage("give-format-error", "cmd", this.getName()));
-			return true;
-		}
+        if (args.length < 2) {
+            sender.sendMessage(this.getPlugin().translateMessage("give-format-error", "cmd", this.getName()));
+            return true;
+        }
 
-		float to = Float.parseFloat(args[1]);
+        float to = Float.parseFloat(args[1]);
 
-		Player p = Utils.getPlayer(args[0]);
-		String name;
-		if (p == null) {
-			name = args[0];
-		} else {
-			name = p.getName();
-		}
+        Player p = Server.getInstance().getPlayer(args[0]);
+        String name;
+        if (p == null) {
+            name = args[0];
+        } else {
+            name = p.getName();
+        }
 
-		if (Objects.equals(name, "")) {
-			sender.sendMessage(getPlugin().translateMessage("invalid-name", "cmd", this.getName()));
-			return true;
-		}
+        if (Objects.equals(name, "")) {
+            sender.sendMessage(getPlugin().translateMessage("invalid-name", "cmd", this.getName()));
+            return true;
+        }
 
-		if (!getPlugin().addMoney(name, to)) {
-			sender.sendMessage(getPlugin().translateMessage("give-failed",
+        if (!getPlugin().addMoney(name, to)) {
+            sender.sendMessage(getPlugin().translateMessage("give-failed",
                     "amount", to,
                     "type", getPlugin().getCurrency1(),
-					"name", name));
+                    "name", name));
 
-			return true;
-		}
+            return true;
+        }
 
-		if (p != null) {
-			p.sendMessage(getPlugin().translateMessage("give-done",
-					"name", sender.getName(),
+        if (p != null) {
+            p.sendMessage(getPlugin().translateMessage("give-done",
+                    "name", sender.getName(),
                     "amount", to,
                     "type", getPlugin().getCurrency1()));
-		}
+        }
 
-		sender.sendMessage(getPlugin().translateMessage("give-success",
+        sender.sendMessage(getPlugin().translateMessage("give-success",
                 "amount", to,
                 "type", getPlugin().getCurrency1(),
-				"name", name));
-		return true;
-	}
+                "name", name));
+        return true;
+    }
 }

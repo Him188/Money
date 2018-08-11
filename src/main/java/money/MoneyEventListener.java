@@ -16,7 +16,7 @@ public class MoneyEventListener implements Listener {
         this.money = money;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
         AbstractDatabase child = money.db.getChildDatabase(event.getPlayer().getName());
         if (child == null || child.size() == 0) {

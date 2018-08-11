@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 2.1.0
+version: 3.0
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
@@ -109,3 +109,6 @@ updateInfo-2.1.0:
 - "2017-08-07 优化 适配 MoeDB 2.0.0"
 - "2017-08-07 新增 新指令查看玩家拥有的货币数量/银行余额"
 - "2017-08-07 修复 数据保存问题"
+
+updateInfo-3.0:
+- "2018-08-11 时隔一年的主类重写, 进行了大量代码优化"

@@ -1,14 +1,12 @@
 package money.command;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import money.CurrencyType;
 import money.Money;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Him188 @ Money Project
@@ -27,7 +25,7 @@ public class WalletInfo1Command extends MoneyCommand {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean execute(CommandSender sender, String label, String[] args) {
 		if (!this.testPermission(sender)) {
 			//sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
 			return true;

@@ -22,7 +22,6 @@ public interface MoneyAPI {
         return Money.getInstance();
     }
 
-
     /**
      * 获取第一种货币 String 值 <br>
      * Get config value of the first currency unit, like "Coin"
