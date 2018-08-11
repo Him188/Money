@@ -102,16 +102,20 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
             this.getLogger().warning("无法创建配置目录 (" + getDataFolder() + ")");
             this.getLogger().warning("Could not create data directory (" + getDataFolder() + ")");
         }
-        reloadConfig();
     }
 
     @Override
     public void onEnable() {
-        if (!new File(getDataFolder(), "Languages.properties").exists()) {
+        if (!new File(getDataFolder(), "Language.properties").exists()
+            || !new File(getDataFolder(), "config.yml").exists()
+            || !new File(getDataFolder(), "Commands.yml").exists()) {
+
             LanguageChooser chooser = new LanguageChooser(this.getLogger());
             chooser.startChoosing();
             LanguageType type = chooser.getLanguage();
-            saveResource("Languages_" + type.name().toLowerCase() + ".properties", "Languages.properties", false);
+            saveResource("Language_" + type.name().toLowerCase() + ".properties", "Language.properties", false);
+            saveResource("config_" + type.name().toLowerCase() + ".yml", "config.yml", false);
+            saveResource("Commands_" + type.name().toLowerCase() + ".yml", "Commands.yml", false);
         }
 
         reloadConfig();

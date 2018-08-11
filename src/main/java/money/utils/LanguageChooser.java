@@ -5,7 +5,10 @@ import cn.nukkit.command.CommandReader;
 import cn.nukkit.utils.Logger;
 import cn.nukkit.utils.TextFormat;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 语言选择器.
@@ -14,15 +17,16 @@ import java.util.concurrent.*;
  * @author Him188moe @ Money Project
  */
 public final class LanguageChooser {
-    private final Future<LanguageType> future;
+    private final FutureTask<LanguageType> task;
+    private final Logger logger;
 
     public LanguageChooser(final Logger logger) {
-        future = new FutureTask<>(() -> this._getLanguage(logger));
-
+        this.logger = logger;
+        this.task = new FutureTask<>(this::_getLanguage);
     }
 
     public void startChoosing() {
-        ((FutureTask<?>) future).run();
+        this.task.run();
     }
 
     /**
@@ -32,21 +36,22 @@ public final class LanguageChooser {
      */
     public LanguageType getLanguage() {
         try {
-            return future.get(120, TimeUnit.SECONDS);
+            return this.task.get(120, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException timeout) {
+            this.logger.notice("Language selecting timeout. English is selected");
             return LanguageType.DEFAULT_LANGUAGE;
         }
     }
 
-    private LanguageType _getLanguage(Logger logger) {
+    private LanguageType _getLanguage() {
         CommandReader reader = CommandReader.getInstance();
         reader.interrupt();//暂时中断nk服务
-        LanguageType type = _getLanguage0(reader, logger);
+        LanguageType type = _getLanguage0(reader);
         reader.start();
         return type;
     }
 
-    private LanguageType _getLanguage0(CommandReader reader, Logger logger) {
+    private LanguageType _getLanguage0(CommandReader reader) {
         printLanguageHelp(logger);
 
         int errorTimes = 0;
@@ -54,12 +59,13 @@ public final class LanguageChooser {
         String line;
         while ((line = reader.readLine()) != null) {
             if (errorTimes++ > 3) {//error too many times
+                this.logger.notice("You typed error too many times. English is selected");
                 break;
             }
 
             switch (line) {
                 case "stop": {
-                    future.cancel(true);
+                    this.task.cancel(true);
                     logger.notice("Language selecting canceled");
                     Server.getInstance().shutdown();
                     break;
