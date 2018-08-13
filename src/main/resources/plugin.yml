@@ -1,6 +1,6 @@
 name: Money
 main: money.Money
-version: 3.0
+version: 3.1
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
@@ -112,3 +112,7 @@ updateInfo-2.1.0:
 
 updateInfo-3.0:
 - "2018-08-11 时隔一年的主类重写, 进行了大量代码优化"
+
+updateInfo-3.1:
+- "2018-08-13 修复一些bug"
+- "2018-08-13 async tasks"

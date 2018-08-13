@@ -1,9 +1,11 @@
 package money.command;
 
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.scheduler.AsyncTask;
 import money.CurrencyType;
 import money.Money;
 
@@ -19,28 +21,23 @@ public class GiveOnline1Command extends MoneyCommand {
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("give-online-1", new CommandParameter[]{
-                        new CommandParameter("amount", CommandParamType.INT, false)
+                        new CommandParameter("amount", CommandParamType.FLOAT, false)
                 });
             }
         });
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
-        if (!this.testPermissionSilent(sender)) {
-            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
-            return true;
-        }
-
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(this.getPlugin().translateMessage("give-online-format-error", "cmd", this.getName()));
             return true;
         }
 
-        float to;
+        float amount;
 
         try {
-            to = Float.parseFloat(args[0]);
+            amount = Float.parseFloat(args[0]);
         } catch (NumberFormatException e) {
             sender.sendMessage(this.getPlugin().translateMessage("number-format-error"));
             return true;
@@ -48,18 +45,24 @@ public class GiveOnline1Command extends MoneyCommand {
 
         final String message = getPlugin().translateMessage("give-online-for-you",
                 "name", sender.getName(),
-                "amount", to,
+                "amount", amount,
                 "type", getPlugin().getCurrency1());
-        Server.getInstance().getOnlinePlayers().forEach((uuid, player) -> {
-            getPlugin().addMoney(player, to, CurrencyType.FIRST);
-            player.sendMessage(message);
-        });
 
-        int count = getPlugin().addAllMoney(to, CurrencyType.FIRST);
-        sender.sendMessage(getPlugin().translateMessage("give-online-done",
-                "count", count,
-                "type", getPlugin().getCurrency1(),
-                "amount", to));
+        sender.sendMessage(getPlugin().translateMessage("give-online-wait"));
+
+        Server.getInstance().getScheduler().scheduleAsyncTask(this.getPlugin(), new AsyncTask() {
+            @Override
+            public void onRun() {
+                Server.getInstance().getOnlinePlayers().forEach((uuid, player) -> {
+                    getPlugin().addMoney(player, amount, CurrencyType.FIRST);
+                    player.sendMessage(message);
+                });
+
+                sender.sendMessage(getPlugin().translateMessage("give-online-done",
+                        "type", getPlugin().getCurrency1(),
+                        "amount", amount));
+            }
+        });
         return true;
     }
 }

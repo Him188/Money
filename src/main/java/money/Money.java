@@ -567,11 +567,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
     @Override
+    @Deprecated
     public int setAllMoney(final float amount) {
         return setAllMoney(amount, CurrencyType.FIRST);
     }
 
     @Override
+    @Deprecated
     public int setAllMoney(final float amount, final CurrencyType type) {
         int i = 0;
         for (String s : getPlayers()) {
@@ -584,11 +586,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     }
 
     @Override
+    @Deprecated
     public int addAllMoney(final float amount) {
         return addAllMoney(amount, CurrencyType.FIRST);
     }
 
     @Override
+    @Deprecated
     public int addAllMoney(final float amount, final CurrencyType type) {
         int i = 0;
         for (String s : getPlayers()) {
@@ -601,11 +605,13 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     }
 
     @Override
+    @Deprecated
     public int reduceAllMoney(final float amount) {
         return reduceAllMoney(amount, CurrencyType.FIRST);
     }
 
     @Override
+    @Deprecated
     public int reduceAllMoney(final float amount, final CurrencyType type) {
         int i = 0;
         for (String s : getPlayers()) {
@@ -654,6 +660,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
     @Override
+    @Deprecated
     public int setAllBank(float amount) {
         int i = 0;
         for (String s : getPlayers()) {

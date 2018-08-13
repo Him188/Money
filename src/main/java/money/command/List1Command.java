@@ -1,6 +1,7 @@
 package money.command;
 
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -22,19 +23,14 @@ public class List1Command extends MoneyCommand {
         this.setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("list-1", new CommandParameter[]{
-                        new CommandParameter("page", CommandParamType.INT, true)
+                        new CommandParameter("page", CommandParamType.FLOAT, true)
                 });
             }
         });
     }
 
     @Override
-    public boolean execute(final CommandSender sender, String label, final String[] args) {
-        if (!this.testPermissionSilent(sender)) {
-            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
-            return true;
-        }
-
+    public boolean onCommand(CommandSender sender, Command command, String label, final String[] args) {
         Server.getInstance().getScheduler().scheduleAsyncTask(getPlugin(), new AsyncTask() {
             @SuppressWarnings("Duplicates")
             @Override

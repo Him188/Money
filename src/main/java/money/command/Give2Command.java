@@ -2,6 +2,7 @@ package money.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -22,25 +23,20 @@ public class Give2Command extends MoneyCommand {
             {
                 put("give-2", new CommandParameter[]{
                         new CommandParameter("player", CommandParamType.STRING, false),
-                        new CommandParameter("amount", CommandParamType.INT, false)
+                        new CommandParameter("amount", CommandParamType.FLOAT, false)
                 });
             }
         });
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
-        if (!this.testPermissionSilent(sender)) {
-            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
-            return true;
-        }
-
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(this.getPlugin().translateMessage("give-format-error", "cmd", this.getName()));
             return true;
         }
 
-        float to = Float.parseFloat(args[1]);
+        float amount = Float.parseFloat(args[1]);
 
         Player p = Server.getInstance().getPlayer(args[0]);
         String name;
@@ -55,9 +51,9 @@ public class Give2Command extends MoneyCommand {
             return true;
         }
 
-        if (!getPlugin().addMoney(name, to, CurrencyType.SECOND)) {
+        if (!getPlugin().addMoney(name, amount, CurrencyType.SECOND)) {
             sender.sendMessage(getPlugin().translateMessage("give-failed",
-                    "amount", to,
+                    "amount", amount,
                     "type", getPlugin().getCurrency2(),
                     "name", name));
             return true;
@@ -66,11 +62,11 @@ public class Give2Command extends MoneyCommand {
         if (p != null) {
             p.sendMessage(getPlugin().translateMessage("give-done",
                     "name", sender.getName(),
-                    "amount", to,
+                    "amount", amount,
                     "type", getPlugin().getCurrency2()));
         }
         sender.sendMessage(getPlugin().translateMessage("give-success",
-                "amount", to,
+                "amount", amount,
                 "type", getPlugin().getCurrency2(),
                 "name", name));
         return true;

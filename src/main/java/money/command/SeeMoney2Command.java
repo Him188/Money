@@ -2,6 +2,7 @@ package money.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -28,12 +29,7 @@ public class SeeMoney2Command extends MoneyCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
-        if (!this.testPermissionSilent(sender)) {
-            sender.sendMessage(this.getPlugin().translateMessage("has-no-permission"));
-            return true;
-        }
-
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(this.getPlugin().translateMessage("see-money-format-error", "cmd", this.getName()));
             return true;

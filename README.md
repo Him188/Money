@@ -1,43 +1,79 @@
-# Money
-## 特性
-1. 多语言. (简体中文, 繁体中文, 英文), 并且可以在 Language.properties 中修改语言. (命令提示, 配置文件提示都支持多语言)  
-2. 自定义命令. /money, /钱包, /wallet ...  喜欢哪个就用哪个!  
-3. 支持 2 种货币. 并且可以关闭第二种货币, 货币名称当然也可以自定义.  
-4. 银行有利息  
-5. 支持多种数据保存方式.  
-6. 已通过测试, 几乎无 bug  
-7. 支持全服批量修改货币数量  
-8. 配置文件含详细注释  
-  
-## 指令
-指令自己去 Command.yml 看咯...反正可以自定义说了也没用  
-  
-## 关于重写
-Money 2.0.0 将几乎所有代码重写(自己终于能看得顺眼了)   
-重写修改内容:  
-- 更多的事件(共7个). 利息也有事件了, 其他插件可以拦截利息发放  
-- 添加/删除 API 更新  
-- 货币种类由 boolean 更换为 enum CurrencyType, 此 enum 中有非常详细的注释  
-- 添加了更多的API (详见 interface MoneyAPI)  
-- 指令由原本压缩在一个onCommand方法改为多指令类  
-- 指令不规范问题解决  
-- 支持修改指令权限  
-- 指令玩家名参数更便捷  
-- 使用 properties 作为语言配置文件, 更简单. 旧数据自动转换  
-- 终于支持了数据库 (使用我所在小组的一个数据库插件作为前置). 旧数据自动转换  
-- 事件从 Main 分离, 缩减 Main 体积(API多了还不是有25k字符850行). 简洁  
-- 事件归了个类 (虽然基本没啥用)  
+# Money: Economy System Plugin
 
-## 主要 API 修改:
-- enum 货币类型  
-- 部分事件修改包名  
+## Status
 
-开发者请立即更新你的插件, 以免给服主带来不必要的麻烦
+|  Newest Version  |  Update Date  |
+|:----------------:|:-------------:|
+|       3.0        |  2018/08/12   |
 
-## 依赖
-Money 2.0.0 开始, 数据库依赖插件 [MoeDB]("https://www.github.com/Him188/MoeDB"). 安装新版 Money 时请确保已经安装该插件.  
-若未安装将无法启动
+## Introduction
+This plugin is like  [EcocomyAPI](https://github.com/EconomyS/EconomyAPI).  
+We have wallet, bank(with interest), database(Using [MoeDB](https://github.com/Him188/MoeDB)) and so on...
 
+While EconomyAPI is used in Global, Money is used in China, generally.  
+So, many plugins made by Chinese depended on this.
+
+Emm, Of cause you don't all like this plugin.  
+So, **I made adapter for EconomyAPI and Money**
+
+**With the adapter, you can use the api of EconomyAPI to access Money, and vice versa.**
+
+That means, you can use both plugins depend on Money or EconomyAPI, without installing two economy plugin.
+
+## Features
+1. Multi languages(Chinese, English), customizable.
+2. Multi database (Now support Redis and Yaml)(Using [MoeDB](https://github.com/Him188/MoeDB)).
+3. Custom commands
+4. Two currency types, customizable type name.
+
+## Commands
+Too many to introduce.  
+Please check more in `Command.yml`.
+- /coin, /point.  Gets wallet ballance.
+- /paycoin, /paypoint.  Pays to someone.
+- /givecoin, /givepoint.  (OP)Gives someone.
+- /coinlist, /pointlist.  See list
+- /banksave, /banktake, /bank.  Bank
+
+## Permissions
+  `money.command.{command}`  
+   {command} represents "coin", "pay", "give", etc.
+
+## Development
+
+### CurrencyType
+Learn about [money.CurrencyType](https://github.com/Him188/Money/src/main/java/money/CurrencyType.java)  
+Preview:
+```java
+package money;
+public enum CurrencyType{
+    FIRST, //coin
+    SECOND, //point
+}
+```
+
+### MoneyAPI
+**Look up all APIs in [MoneyAPI](https://github.com/Him188/Money/src/main/java/money/MoneyAPI.java)**
+Preview general uses:
+```java
+package money;
+public interface MoneyAPI{
+    static Money getInstance();
+    
+    float getMoney(Player player, CurrencyType type);
+    boolean setMoney(Player player, CurrencyType type, float amount);
+    boolean addMoney(Player player, CurrencyType type, float amount);
+    boolean reduceMoney(Player player, CurrencyType type, float amount);
+    
+    float getBank(Player player);
+    boolean setBank(Player player);
+    boolean addBank(Player player, float amount);
+    boolean reduceBank(Player player, float amount);
+}
+```
+
+## Dependency
+- Database support: **MoeDB([GitHub](https://github.com/Him188/MoeDB))**
 
 ## How to use
 ### Maven repository
@@ -49,7 +85,7 @@ Money 2.0.0 开始, 数据库依赖插件 [MoeDB]("https://www.github.com/Him188
         <url>http://repo.him188.moe:8081/repository/money/</url>
     </repository>
     ```
-2. Add `dependency` in `build.dependencies`
+2. Add `dependency` in `dependencies`
     ```xml
     <dependency>
         <groupId>money</groupId>

@@ -276,8 +276,10 @@ public interface MoneyAPI {
      * @return 成功操作的玩家数 <br>
      * number of successful operations
      */
+    @Deprecated
     int setAllMoney(float amount);
 
+    @Deprecated
     int setAllMoney(float amount, CurrencyType type);
 
 
@@ -291,8 +293,10 @@ public interface MoneyAPI {
      * @return 成功操作的玩家数 <br>
      * number of successful operations
      */
+    @Deprecated
     int addAllMoney(float amount);
 
+    @Deprecated
     int addAllMoney(float amount, CurrencyType type);
 
 
@@ -306,8 +310,10 @@ public interface MoneyAPI {
      * @return 成功操作的玩家数 <br>
      * number of successful operations
      */
+    @Deprecated
     int reduceAllMoney(float amount);
 
+    @Deprecated
     int reduceAllMoney(float amount, CurrencyType type);
 
 
@@ -349,6 +355,7 @@ public interface MoneyAPI {
      * @return 成功操作的玩家数 <br>
      * number of successful operations
      */
+    @Deprecated
     int setAllBank(float amount);
 }
 
