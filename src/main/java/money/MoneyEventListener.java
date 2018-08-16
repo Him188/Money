@@ -16,13 +16,15 @@ public class MoneyEventListener implements Listener {
         this.money = money;
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
         AbstractDatabase child = money.db.getChildDatabase(event.getPlayer().getName());
         if (child == null || child.size() == 0) {
-            money.setMoney(event.getPlayer(), (float) money.getConfig().getDouble("initial-money-1", 0), CurrencyType.FIRST);
-            money.setMoney(event.getPlayer(), (float) money.getConfig().getDouble("initial-money-2", 0), CurrencyType.SECOND);
-            money.setBank(event.getPlayer(), (float) money.getConfig().getDouble("initial-bank-money", 0));
+            money.createAccount(
+                    event.getPlayer().getName(), (float) money.getConfig().getDouble("initial-money-1", 0),
+                    (float) money.getConfig().getDouble("initial-money-2", 0),
+                    (float) money.getConfig().getDouble("initial-bank-money", 0)
+            );
         }
     }
 }

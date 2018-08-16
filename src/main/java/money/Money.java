@@ -12,6 +12,7 @@ import money.command.*;
 import money.event.bank.BankChangeEvent;
 import money.event.bank.BankDecreaseEvent;
 import money.event.bank.BankIncreaseEvent;
+import money.event.money.AccountCreateEvent;
 import money.event.money.MoneyChangeEvent;
 import money.event.money.MoneyDecreaseEvent;
 import money.event.money.MoneyIncreaseEvent;
@@ -420,7 +421,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     }
 
     @Override
-    public boolean setMoney(String player, float money, CurrencyType type) {
+    public synchronized boolean setMoney(String player, float money, CurrencyType type) {
         MoneyChangeEvent event = new MoneyChangeEvent(player, money, type);
         Server.getInstance().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
@@ -474,7 +475,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     }
 
     @Override
-    public boolean addMoney(String player, float amount, CurrencyType type) {
+    public synchronized boolean addMoney(String player, float amount, CurrencyType type) {
         if (amount < 0) {
             return reduceMoney(player, -amount, type);
         }
@@ -496,7 +497,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
     @Override
-    public boolean reduceMoney(String player, float amount, CurrencyType type) {
+    public synchronized boolean reduceMoney(String player, float amount, CurrencyType type) {
         if (amount < 0) {
             return addMoney(player, -amount, type);
         }
@@ -550,7 +551,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     }
 
     @Override
-    public boolean setBank(String player, float bank) {
+    public synchronized boolean setBank(String player, float bank) {
         BankChangeEvent event = new BankChangeEvent(player, bank);
         Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -625,7 +626,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
     @Override
-    public boolean addBank(String player, float amount) {
+    public synchronized boolean addBank(String player, float amount) {
         if (amount < 0) {
             return reduceBank(player, -amount);
         }
@@ -643,7 +644,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
 
     @Override
-    public boolean reduceBank(final String player, final float amount) {
+    public synchronized boolean reduceBank(final String player, final float amount) {
         if (amount < 0) {
             return addBank(player, -amount);
         }
@@ -671,6 +672,24 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         return i;
     }
 
+    @Override
+    public synchronized boolean createAccount(String player, float money1, float money2, float bank) {
+        AccountCreateEvent event = new AccountCreateEvent(player, money1, money2, bank);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        AbstractDatabase data = db.getChildDatabase(player);
+        if (data == null) {
+            data = new HashDatabase();
+        }
+        data.put("money1", event.getMoney1());
+        data.put("money2", event.getMoney2());
+        data.put("bank", event.getBank());
+        db.put(player, data);
+        return true;
+    }
 
     public Set<String> getPlayers() {
         return new HashSet<>(db.keySet());

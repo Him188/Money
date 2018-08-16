@@ -357,5 +357,20 @@ public interface MoneyAPI {
      */
     @Deprecated
     int setAllBank(float amount);
+
+    /**
+     * 创建一个玩家账户 <br>
+     * Creates a initial account.
+     *
+     * @param player player name
+     * @param money1 {@link CurrencyType#FIRST}
+     * @param money2 {@link CurrencyType#SECOND}
+     * @param bank   bank
+     *
+     * @return whether succeed or not
+     *
+     * @since 3.2
+     */
+    boolean createAccount(String player, float money1, float money2, float bank);
 }
 

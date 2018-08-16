@@ -1,10 +1,11 @@
 name: Money
 main: money.Money
-version: 3.1
+version: @VERSION@
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
 description: "Money plugin for Nukkit"
+website: "https://github.com/Him188/Money"
 
 softdepend:
 - MoeDB
