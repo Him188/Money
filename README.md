@@ -2,9 +2,9 @@
 
 ## Status
 
-|  Newest Version  |  Update Date  |
-|:----------------:|:-------------:|
-|       3.0        |  2018/08/12   |
+| Newest Version | Update Date | Update Info                               |
+|:--------------:|:-----------:|:------------------------------------------|
+|      3.2       | 2018/08/16  | Fix bugs; [Adapters](/adapters/README.md) |
 
 ## Introduction
 This plugin is like  [EcocomyAPI](https://github.com/EconomyS/EconomyAPI).  
@@ -22,7 +22,7 @@ That means, you can use both plugins depend on Money or EconomyAPI, without inst
 
 ## Features
 1. Multi languages(Chinese, English), customizable.
-2. Multi database (Now support Redis and Yaml)(Using [MoeDB](https://github.com/Him188/MoeDB)).
+2. Multi **database** (Now support Redis and Yaml)(Using [MoeDB](https://github.com/Him188/MoeDB)).
 3. Custom commands
 4. Two currency types, customizable type name.
 
@@ -42,7 +42,7 @@ Please check more in `Command.yml`.
 ## Development
 
 ### CurrencyType
-Learn about [money.CurrencyType](https://github.com/Him188/Money/src/main/java/money/CurrencyType.java)  
+Learn about [money.CurrencyType](/src/main/java/money/CurrencyType.java)  
 Preview:
 ```java
 package money;
@@ -53,8 +53,8 @@ public enum CurrencyType{
 ```
 
 ### MoneyAPI
-**Look up all APIs in [MoneyAPI](https://github.com/Him188/Money/src/main/java/money/MoneyAPI.java)**
-Preview general uses:
+**Look up all APIs in [MoneyAPI](/src/main/java/money/MoneyAPI.java)**
+Preview **general** uses:
 ```java
 package money;
 public interface MoneyAPI{
@@ -69,6 +69,8 @@ public interface MoneyAPI{
     boolean setBank(Player player);
     boolean addBank(Player player, float amount);
     boolean reduceBank(Player player, float amount);
+    
+    boolean createAccount(Player player, float money1, float money2, float bank);
 }
 ```
 
