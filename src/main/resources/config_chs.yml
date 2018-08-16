@@ -43,11 +43,11 @@ money-unit-2: "Point"
 
 # 银行利率
 # 默认: 0.0003
-bank-interest-value: "0.0003"
+bank-interest-value: 0.0003
 
 # 银行利息发放间隔. (真实时间) (单位秒) (修改系统时间会影响利息发放)
 # 默认: 86400 (24小时)
-bank-interest-time: "86400"
+bank-interest-time: 86400
 
 # 是否补发服务器离线时未发放的利息
 # 默认: true (是)
@@ -55,20 +55,20 @@ bank-interest-real: true
 
 # 玩家第一次进服的初始货币1数量
 # 默认: 1000
-initial-money-1: "1000"
+initial-money-1: 1000
 
 # 玩家第一次进服的初始货币2数量
 # 默认: 0
-initial-money-2: "0"
+initial-money-2: 0
 
 # 玩家第一次进服的初始银行储蓄
 # 默认: 0
-initial-bank-money: "0"
+initial-bank-money: 0
 
 # 支付货币1时, 玩家最低剩余值
 # 默认: 1000
-pay-1-limit: "1000"
+pay-1-limit: 1000
 
 # 支付货币2时, 玩家最低剩余值
 # 默认: 1000
-pay-2-limit: "1000"
+pay-2-limit: 1000

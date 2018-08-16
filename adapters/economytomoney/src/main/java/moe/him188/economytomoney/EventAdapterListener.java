@@ -1,4 +1,4 @@
-package moe.him188.moneytoeconomy;
+package moe.him188.economytomoney;
 
 import cn.nukkit.Server;
 import cn.nukkit.event.EventHandler;
