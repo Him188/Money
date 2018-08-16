@@ -44,31 +44,28 @@ money-unit-2: "Point"
 
 # 銀行利息
 # 默認: 0.0003
-bank-interest-value: "0.0003"
+bank-interest-value: 0.0003
 
 # 銀行利息計算時間. (真實時間) (單位秒)
 # 默認 86400 (24小時)
-bank-interest-time: "86400"
-
-# 請勿修改此項.
-bank-time: "0"
+bank-interest-time: 86400
 
 # 玩家第壹次進服的初始第壹種貨幣數量
 # 默認 1000
-initial-money-1: "1000"
+initial-money-1: 1000
 
 # 玩家第壹次進服的初始第二種貨幣數量
 # 默認 0
-initial-money-2: "0"
+initial-money-2: 0
 
 # 玩家第壹次進服的初始銀行儲蓄
 # 默認 0
-initial-bank-money: "0"
+initial-bank-money: 0
 
 # 支付第壹種貨幣時, 玩家最低剩余值
 # 默認 1000
-pay-1-limit: "1000"
+pay-1-limit: 1000
 
 # 支付第二種貨幣時, 玩家最低剩余值
 # 默認 1000
-pay-2-limit: "1000"
+pay-2-limit: 1000

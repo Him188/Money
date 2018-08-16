@@ -37,31 +37,28 @@ money-unit-2: "Point"
 
 # Bank interest.
 # Default: 0.0003
-bank-interest-value: "0.0003"
+bank-interest-value: 0.0003
 
 # Bank interest calculation time. (Real time) (Unit: sec)
 # Default: 7200
-bank-interest-time: "7200"
-
-# Please do not modify that.
-bank-time: "0"
+bank-interest-time: 7200
 
 # The number of initial money players entering the server for the first time
 # Default: 1000
-initial-money-1: "1000"
+initial-money-1: 1000
 
 # The number of initial money players entering the server for the first time
 # Default: 0
-initial-money-2: "0"
+initial-money-2: 0
 
 # The initial bank savings of players entering the server for the first time
 # Default: 0
-initial-bank-money: "0"
+initial-bank-money: 0
 
 # When paying the first currency, the player is the lowest.
 # Default: 1000
-pay-1-limit: "1000"
+pay-1-limit: 1000
 
 # When paying the second currency, the player is the lowest.
 # Default: 1000
-pay-2-limit: "1000"
+pay-2-limit: 1000
