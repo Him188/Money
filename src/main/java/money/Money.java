@@ -70,14 +70,14 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     };
 
     @SuppressWarnings("unchecked")
-    private static PluginCommand<Money> matchCommand(String key, String name, Money owner, String[] args) {
+    private static PluginCommand<Money> matchCommand(String key, String name, Money owner, String[] aliases) {
         key = key.replace("-", "");
         key = key.toLowerCase();
         for (Class<?> commandClass : COMMAND_CLASSES) {
             if (commandClass.getSimpleName().toLowerCase().equals(key + "command")) {
                 try {
                     Constructor<?> constructor = commandClass.getConstructor(String.class, Money.class, String[].class);
-                    return (PluginCommand<Money>) constructor.newInstance(name, owner, args);
+                    return (PluginCommand<Money>) constructor.newInstance(name, owner, aliases);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -117,6 +117,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
             saveResource("Language_" + type.name().toLowerCase() + ".properties", "Language.properties", false);
             saveResource("config_" + type.name().toLowerCase() + ".yml", "config.yml", false);
             saveResource("Commands_" + type.name().toLowerCase() + ".yml", "Commands.yml", false);
+            Server.getInstance().forceShutdown();
         }
 
         reloadConfig();
@@ -208,13 +209,6 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
 
     @Override
     public void reloadConfig() {
-        File old = new File(getDataFolder() + "/Config.yml");
-        if (old.exists()) {
-            if (!old.renameTo(new File(getDataFolder() + "/config.yml"))) {
-                getLogger().error("could not rename Config.yml to config.yml");
-            }
-        }
-
         super.reloadConfig();
     }
 
