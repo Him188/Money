@@ -2,15 +2,15 @@
 
 ## Status
 
-| Newest Version | Update Date | Update Info                               |
-|:--------------:|:-----------:|:------------------------------------------|
-|      3.2       | 2018/08/16  | Fix bugs; [Adapters](/adapters/README.md) |
+| Newest Version | Update Date | Update Info                            |
+|:--------------:|:-----------:|:---------------------------------------|
+|      3.3       | 2018/08/17  | Fix bugs; Automatic language selecting |
 
 ## Introduction
 This plugin is like  [EcocomyAPI](https://github.com/EconomyS/EconomyAPI).  
 We have wallet, bank(with interest), database(Using [MoeDB](https://github.com/Him188/MoeDB)) and so on...
 
-While EconomyAPI is used in Global, Money is used in China, generally.  
+While EconomyAPI is used in global, Money is used in China, generally.  
 So, many plugins made by Chinese depended on this.
 
 Emm, Of cause you don't all like this plugin.  
