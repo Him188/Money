@@ -29,6 +29,7 @@ That means, you can use both plugins depend on Money or EconomyAPI, without inst
 ## Commands
 Too many to introduce.  
 Please check more in `Command.yml`.
+- /moneyselectlang <chs|eng|cht>  Change language type.(Can't modify in command.yml)
 - /coin, /point.  Gets wallet ballance.
 - /paycoin, /paypoint.  Pays to someone.
 - /givecoin, /givepoint.  (OP)Gives someone.

@@ -17,7 +17,6 @@ import money.event.money.MoneyChangeEvent;
 import money.event.money.MoneyDecreaseEvent;
 import money.event.money.MoneyIncreaseEvent;
 import money.tasks.BankInterestTask;
-import money.utils.LanguageChooser;
 import money.utils.LanguageType;
 import money.utils.Translator;
 import net.mamoe.moedb.AbstractDatabase;
@@ -66,7 +65,9 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
             WalletInfo2Command.class,
             SeeMoney1Command.class,
             SeeMoney2Command.class,
-            SeeBankCommand.class
+            SeeBankCommand.class,
+
+            SelectLanguageCommand.class
     };
 
     @SuppressWarnings("unchecked")
@@ -105,19 +106,23 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
         }
     }
 
+    public void resetLanguage(LanguageType type, boolean replace) {
+        this.getLogger().notice("Language " + type.getTranslationName() + " is selected.");
+        this.getLogger().notice("Of course, you can use command '/moneyselectlang <chs|eng|cht>' to change");
+
+        saveResource("Language_" + type.name().toLowerCase() + ".properties", "Language.properties", replace);
+        saveResource("config_" + type.name().toLowerCase() + ".yml", "config.yml", replace);
+        saveResource("Commands_" + type.name().toLowerCase() + ".yml", "Commands.yml", replace);
+    }
+
     @Override
     public void onEnable() {
         if (!new File(getDataFolder(), "Language.properties").exists()
             || !new File(getDataFolder(), "config.yml").exists()
             || !new File(getDataFolder(), "Commands.yml").exists()) {
 
-            LanguageChooser chooser = new LanguageChooser(this.getLogger());
-            chooser.startChoosing();
-            LanguageType type = chooser.getLanguage();
-            saveResource("Language_" + type.name().toLowerCase() + ".properties", "Language.properties", false);
-            saveResource("config_" + type.name().toLowerCase() + ".yml", "config.yml", false);
-            saveResource("Commands_" + type.name().toLowerCase() + ".yml", "Commands.yml", false);
-            Server.getInstance().forceShutdown();
+            LanguageType type = LanguageType.getDefaultLanguage();
+            this.resetLanguage(type, false);
         }
 
         reloadConfig();
@@ -153,12 +158,14 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
                 put("money.command.see1", "op");
                 put("money.command.see2", "op");
                 put("money.command.seebank", "op");
+
+                put("money.command.selectlang", "op");
             }
         }.forEach((name, permission) -> getServer().getPluginManager().addPermission(new Permission(name, permission, permission)));
 
-
         /* Register commands */
 
+        Server.getInstance().getCommandMap().register("moneyselectlang", new SelectLanguageCommand("moneyselectlang", this, new String[0]));
         new Config(getDataFolder() + "/Commands.yml", Config.YAML).getRootSection().forEach((key, value) -> {
             if (value == null || value.equals("") || value.equals("version") || value.equals("type") || value.equals("language")) {
                 return;
