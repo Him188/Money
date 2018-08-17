@@ -65,9 +65,7 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
             WalletInfo2Command.class,
             SeeMoney1Command.class,
             SeeMoney2Command.class,
-            SeeBankCommand.class,
-
-            SelectLanguageCommand.class
+            SeeBankCommand.class
     };
 
     @SuppressWarnings("unchecked")
@@ -109,6 +107,27 @@ public final class Money extends PluginBase implements MoneyAPI, Listener {
     public void resetLanguage(LanguageType type, boolean replace) {
         this.getLogger().notice("Language " + type.getTranslationName() + " is selected.");
         this.getLogger().notice("Of course, you can use command '/moneyselectlang <chs|eng|cht>' to change");
+
+        if (replace) {
+            //backup
+            for (String fileName : new String[]{
+                    "config.yml",
+                    "Language.properties",
+                    "Commands.yml"
+            }) {
+                File file = new File(getDataFolder(), fileName);
+                File backup = new File(getDataFolder(), fileName + ".backup");
+                if (backup.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    backup.delete();
+                }
+                if (file.exists()) {
+                    if (!file.renameTo(backup)) {
+                        this.getLogger().warning("Backing up old " + fileName + " failed.");
+                    }
+                }
+            }
+        }
 
         saveResource("Language_" + type.name().toLowerCase() + ".properties", "Language.properties", replace);
         saveResource("config_" + type.name().toLowerCase() + ".yml", "config.yml", replace);

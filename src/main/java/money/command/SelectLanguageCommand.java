@@ -1,6 +1,5 @@
 package money.command;
 
-import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
@@ -29,11 +28,6 @@ public class SelectLanguageCommand extends MoneyCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            sender.sendMessage(this.getPermissionMessage());
-            return false;
-        }
-
         if (args.length == 0) {
             return false;
         }
