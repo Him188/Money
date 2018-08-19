@@ -1,7 +1,7 @@
 # Money: Economy System Plugin
 
 ## Status
-
+ [![Build Status](https://travis-ci.org/Him188/Money.svg?branch=master)](https://travis-ci.org/Him188/Money)
 | Newest Version | Update Date | Update Info                            |
 |:--------------:|:-----------:|:---------------------------------------|
 |      3.3       | 2018/08/17  | Fix bugs; Automatic language selecting |
