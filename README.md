@@ -21,7 +21,8 @@ So, **I made adapter for EconomyAPI and Money**
 That means, you can use both plugins depend on Money or EconomyAPI, without installing two economy plugin.
 
 ## Download [![Build Status](https://travis-ci.org/Him188/Money.svg?branch=master)](https://travis-ci.org/Him188/Money)
-- [Jenkins](http://repo.him188.moe:8080/job/money)
+- [Jenkins(Money)](http://repo.him188.moe:8080/job/money)
+- [Jenkins(MoeDB)](http://repo.him188.moe:8080/job/moedb)
 
 ## Features
 1. Multi languages(Chinese, English), customizable.
