@@ -1,7 +1,7 @@
 # Money: Economy System Plugin
 
 ## Status
- [![Build Status](https://travis-ci.org/Him188/Money.svg?branch=master)](https://travis-ci.org/Him188/Money)
+
 | Newest Version | Update Date | Update Info                            |
 |:--------------:|:-----------:|:---------------------------------------|
 |      3.3       | 2018/08/17  | Fix bugs; Automatic language selecting |
@@ -19,6 +19,9 @@ So, **I made adapter for EconomyAPI and Money**
 **With the adapter, you can use the api of EconomyAPI to access Money, and vice versa.**
 
 That means, you can use both plugins depend on Money or EconomyAPI, without installing two economy plugin.
+
+## Download [![Build Status](https://travis-ci.org/Him188/Money.svg?branch=master)](https://travis-ci.org/Him188/Money)
+- [Jenkins](http://repo.him188.moe:8080/job/money)
 
 ## Features
 1. Multi languages(Chinese, English), customizable.
@@ -84,8 +87,8 @@ public interface MoneyAPI{
 1. Add `repository` in `repositories`
     ```xml
     <repository>
-        <id>him188-money</id>
-        <url>http://repo.him188.moe:8081/repository/money/</url>
+        <id>him188-public</id>
+        <url>http://repo.him188.moe:8081/repository/public/</url>
     </repository>
     ```
 2. Add `dependency` in `dependencies`
@@ -104,6 +107,6 @@ public interface MoneyAPI{
 
 ### Package JAR file
 
-1. 在项目根目录中运行 `mvn clean package`
+1. Run command `mvn clean package`
 
-2. 在 `target/` 中找到构建完成的 jar
+2. Find jar-file at `target/`

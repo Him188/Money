@@ -17,12 +17,8 @@
 
     <repositories>
         <repository>
-            <id>him188-nukkit</id>
-            <url>http://repo.him188.moe:8081/repository/nukkit/</url>
-        </repository>
-        <repository>
-            <id>him188-moedb</id>
-            <url>http://repo.him188.moe:8081/repository/moedb/</url>
+            <id>him188-public</id>
+            <url>http://repo.him188.moe:8081/repository/public/</url>
         </repository>
     </repositories>
 
