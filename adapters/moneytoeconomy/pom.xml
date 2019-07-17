@@ -21,8 +21,8 @@
             <url>http://jenkins.onebone.me/plugin/repository/everything/</url>
         </repository>
         <repository>
-            <id>him188-nukkit</id>
-            <url>http://repo.him188.moe:8081/repository/nukkit/</url>
+            <id>mamoe-repo</id>
+            <url>http://mamoe.net:8081/repository/public/</url>
         </repository>
     </repositories>
 

@@ -17,19 +17,19 @@
 
     <repositories>
         <repository>
-            <id>him188-public</id>
-            <url>http://repo.him188.moe:8081/repository/public/</url>
+            <id>mamoe-repo</id>
+            <url>http://mamoe.net:8081/repository/public/</url>
         </repository>
     </repositories>
 
     <distributionManagement>
         <repository>
             <id>releases</id>
-            <url>http://repo.him188.moe:8081/repository/money/</url>
+            <url>http://mamoe.net:8081/repository/money/</url>
         </repository>
         <snapshotRepository>
             <id>Snapshots</id>
-            <url>http://repo.him188.moe:8081/repository/money/</url>
+            <url>http://mamoe.net:8081/repository/money/</url>
         </snapshotRepository>
     </distributionManagement>
 

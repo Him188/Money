@@ -17,12 +17,8 @@
 
     <repositories>
         <repository>
-            <id>him188-money</id>
-            <url>http://repo.him188.moe:8081/repository/money/</url>
-        </repository>
-        <repository>
-            <id>him188-nukkit</id>
-            <url>http://repo.him188.moe:8081/repository/nukkit/</url>
+            <id>mamoe-repo</id>
+            <url>http://mamoe.net:8081/repository/public/</url>
         </repository>
     </repositories>
 
@@ -30,7 +26,7 @@
         <dependency>
             <groupId>money</groupId>
             <artifactId>money</artifactId>
-            <version>LATEST</version>
+            <version>3.3</version>
             <scope>provided</scope>
         </dependency>
 

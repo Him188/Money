@@ -1,11 +1,11 @@
 name: EconomyAPI
 main: moe.him188.economytomoney.EconomyToMoney
-version: 1.0
+version: 1.1.0
 api: [1.0.0]
 load: POSTWORLD
 author: Him188 @ Mamoe Tech
 description: "Plugin adapter that allows developer using EconomyAPI to access Money"
-website: "https://github.com/Him188/Money"
+website: "https://github.com/Him188/Money/adapters"
 
 depend:
 - Money

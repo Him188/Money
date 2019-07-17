@@ -1,6 +1,7 @@
 package me.onebone.economyapi;
 
 import cn.nukkit.Player;
+import me.onebone.economyapi.event.account.CreateAccountEvent;
 import money.CurrencyType;
 import money.Money;
 
@@ -31,7 +32,11 @@ public class EconomyAPI {
     }
 
     public boolean createAccount(String player, double defaultMoney, boolean force) {
-        return Money.getInstance().createAccount(player, (float) defaultMoney, 0, 0);
+        CreateAccountEvent event = new CreateAccountEvent(player, defaultMoney);
+        if (event.isCancelled()) {
+            return false;
+        }
+        return Money.getInstance().createAccount(event.getPlayer(), (float) event.getDefaultMoney(), 0, 0);
     }
 
     public LinkedHashMap<String, Double> getAllMoney() {
