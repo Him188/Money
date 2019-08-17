@@ -7,7 +7,7 @@
     <name>Money</name>
     <groupId>money</groupId>
     <artifactId>money</artifactId>
-    <version>3.3</version>
+    <version>3.3.1</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -24,13 +24,9 @@
 
     <distributionManagement>
         <repository>
-            <id>releases</id>
+            <id>mamoe-repo</id>
             <url>http://mamoe.net:8081/repository/money/</url>
         </repository>
-        <snapshotRepository>
-            <id>Snapshots</id>
-            <url>http://mamoe.net:8081/repository/money/</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <dependencies>
